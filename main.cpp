@@ -1,25 +1,28 @@
 #include <iostream>
+#include <vector>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "lib/stb_image_write.h"
 #include "Vector3.h"
 
 int main() {
-    int nx = 200;
-    int ny = 100;
-//    unsigned char imageData [nx * ny * 3];
-//    std::cout << "P3\n" << nx << " " << ny << "\n255\n";
-    for (int i = ny - 1; i >= 0; i--) {
-        for (int j = 0; j < nx; j++) {
-            Vector3 vec(float(j) / float(nx), float(i) / float(ny), 0.2);
-            int ir = int(255.99 * vec[0]);
-            int ig = int(255.99 * vec[1]);
-            int ib = int(255.99 * vec[2]);
-//            imageData[i * j * 3] = ir;
-//            imageData[i * j * 3 + 1] = ig;
-//            imageData[i * j * 3 + 2] = ib;
-//            std::cout << ir << " " << ig << " " << ib << "\n";
+    int width = 200;
+    int height = 100;
+    std::vector<unsigned char> rgb;
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            float r = float(x) / float(width);
+            float g = float(y) / float(height);
+            float b = 0.2;
+
+            rgb.push_back(255.99 * r);
+            rgb.push_back(255.99 * g);
+            rgb.push_back(255.99 * b);
         }
     }
-//    stbi_write_png("output", nx, ny, 3, imageData, 0);
+
+    unsigned char *arr = rgb.data();
+    stbi_write_png("output.png", width, height, 3, arr, 0);
+
     return 0;
 }
