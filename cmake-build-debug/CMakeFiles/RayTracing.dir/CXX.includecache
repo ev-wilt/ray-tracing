@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/chris/Documents/RayTracing/Vector3.h
+math.h
+-
+iosfwd
+-
+
+C:/Users/chris/Documents/RayTracing/lib/stb_image_write.h
+stdlib.h
+-
+stdio.h
+-
+stdarg.h
+-
+stdlib.h
+-
+string.h
+-
+math.h
+-
+assert.h
+-
+
+C:/Users/chris/Documents/RayTracing/main.cpp
+iostream
+-
+lib/stb_image_write.h
+C:/Users/chris/Documents/RayTracing/lib/stb_image_write.h
+Vector3.h
+C:/Users/chris/Documents/RayTracing/Vector3.h
+
