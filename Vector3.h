@@ -24,6 +24,7 @@ public:
     inline float operator[](int i) const { return vals[i]; }
     inline float& operator[](int i) { return vals[i]; }
 
+    inline void operator=(const Vector3 &vec);
     inline Vector3& operator+=(const Vector3 &vec);
     inline Vector3& operator-=(const Vector3 &vec);
     inline Vector3& operator*=(const Vector3 &vec);
@@ -32,7 +33,7 @@ public:
     inline Vector3& operator/=(const float divisor);
 
     inline float length() const {
-        return sqrt(pow(vals[0], 2) * pow(vals[1], 2) * pow(vals[2], 2));
+        return sqrt(pow(vals[0], 2) + pow(vals[1], 2) + pow(vals[2], 2));
     }
     inline float squared_length() const {
         return pow(vals[0], 2) * pow(vals[1], 2) * pow(vals[2], 2);
@@ -43,8 +44,6 @@ public:
     }
 
     float vals[3];
-
-
 };
 
 inline std::istream& operator>>(std::istream &stream, Vector3 &vec) {
@@ -52,7 +51,7 @@ inline std::istream& operator>>(std::istream &stream, Vector3 &vec) {
     return stream;
 }
 
-inline std::ostream & operator>>(std::ostream &stream, Vector3 &vec) {
+inline std::ostream& operator<<(std::ostream &stream, const Vector3 &vec) {
     stream << vec.vals[0] << ", " << vec.vals[1] << ", " << vec.vals[2];
     return stream;
 }
@@ -77,7 +76,7 @@ inline Vector3 operator*(float scale, const Vector3 &vec) {
     return Vector3(scale * vec.vals[0], scale * vec.vals[1], scale * vec.vals[2]);
 }
 
-inline Vector3 operator/(const Vector3 &vec, float scale) {
+inline Vector3 operator/(Vector3 vec, float scale) {
     return Vector3(vec.vals[0] / scale, vec.vals[1] / scale, vec.vals[2] / scale);
 }
 
@@ -93,6 +92,12 @@ inline Vector3 cross_product(const Vector3 &vec1, const Vector3 &vec2) {
     return Vector3( (vec1.vals[1] * vec2.vals[2] - vec1.vals[2] * vec2.vals[1]),
                     (-(vec1.vals[0] * vec2.vals[2] - vec1.vals[2] * vec2.vals[0])),
                     (vec1.vals[0] * vec2.vals[1] - vec1.vals[1] * vec2.vals[0]));
+}
+
+inline void Vector3::operator=(const Vector3 &vec) {
+    vals[0] = vec.vals[0];
+    vals[1] = vec.vals[1];
+    vals[2] = vec.vals[2];
 }
 
 inline Vector3& Vector3::operator+=(const Vector3 &vec) {
