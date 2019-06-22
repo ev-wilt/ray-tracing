@@ -35,10 +35,10 @@ public:
     inline float length() const {
         return sqrt(pow(vals[0], 2) + pow(vals[1], 2) + pow(vals[2], 2));
     }
-    inline float squared_length() const {
+    inline float squaredLength() const {
         return pow(vals[0], 2) * pow(vals[1], 2) * pow(vals[2], 2);
     }
-    inline void make_unit_vector() {
+    inline void makeUnitVector() {
         float mag = 1.0 / sqrt(pow(vals[0], 2) * pow(vals[1], 2) * pow(vals[2], 2));
         vals[0] *= mag; vals[1] *= mag; vals[2] *= mag;
     }
@@ -84,11 +84,11 @@ inline Vector3 operator*(const Vector3 &vec, float scale) {
     return Vector3(scale * vec.vals[0], scale * vec.vals[1], scale * vec.vals[2]);
 }
 
-inline float dot_product(const Vector3 &vec1, const Vector3 &vec2) {
+inline float dotProduct(const Vector3 &vec1, const Vector3 &vec2) {
     return vec1.vals[0] * vec2.vals[0] + vec1.vals[1] * vec2.vals[1] + vec1.vals[2] * vec2.vals[2];
 }
 
-inline Vector3 cross_product(const Vector3 &vec1, const Vector3 &vec2) {
+inline Vector3 crossProduct(const Vector3 &vec1, const Vector3 &vec2) {
     return Vector3( (vec1.vals[1] * vec2.vals[2] - vec1.vals[2] * vec2.vals[1]),
                     (-(vec1.vals[0] * vec2.vals[2] - vec1.vals[2] * vec2.vals[0])),
                     (vec1.vals[0] * vec2.vals[1] - vec1.vals[1] * vec2.vals[0]));
@@ -143,7 +143,7 @@ inline Vector3& Vector3::operator/=(const float multiplier) {
     return *this;
 }
 
-inline Vector3 unit_vector(Vector3 vec) {
+inline Vector3 unitVector(Vector3 vec) {
     return vec / vec.length();
 }
 

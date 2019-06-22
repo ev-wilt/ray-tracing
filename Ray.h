@@ -11,9 +11,9 @@ class Ray {
 public:
     Ray() {}
     Ray(const Vector3& origin, const Vector3& direction) { this->origin = origin; this->direction = direction; }
-    Vector3 get_origin() const { return origin; }
-    Vector3 get_direction() const { return direction; }
-    Vector3 point_at_parameter(float t) const { return origin + t * direction; }
+    Vector3 getOrigin() const { return origin; }
+    Vector3 getDirection() const { return direction; }
+    Vector3 pointAtParameter(float t) const { return origin + t * direction; }
 
     Vector3 origin;
     Vector3 direction;
