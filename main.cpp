@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <random>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "lib/stb_image_write.h"
-#include "Vector3.h"
-#include "Ray.h"
 #include "HitableList.h"
 #include "Sphere.h"
+#include "Camera.h"
 
 Vector3 color(const Ray& ray, Hitable *world) {
     HitRecord record;
@@ -23,25 +23,29 @@ Vector3 color(const Ray& ray, Hitable *world) {
 int main() {
     int width = 600;
     int height = 300;
-    Vector3 lowerLeft(-2.0, -1.0, -1.0);
-    Vector3 horizontal(4.0, 0.0, 0.0);
-    Vector3 vertical(0.0, 2.0, 0.0);
-    Vector3 origin(0.0, 0.0, 0.0);
+    int numAvgs = 300;
     Hitable *list[2];
     list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5);
     list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100);
     Hitable *world = new HitableList(list, 2);
+    Camera cam;
+    std::random_device rand;
+    std::mt19937 gen(rand());
+    std::uniform_real_distribution<> dist(0.0, 1.0);
     std::vector<unsigned char> rgb;
 
     for (int y = height - 1; y >= 0; --y) {
         for (int x = 0; x < width; ++x) {
+            Vector3 col(0.0, 0.0, 0.0);
+            for (int s = 0; s < numAvgs; ++s) {
+                float u = float(x + dist(gen)) / float(width);
+                float v = float(y + dist(gen)) / float(height);
+                Ray ray = cam.getRay(u, v);
+                Vector3 point = ray.pointAtParameter(2.0);
+                col += color(ray, world);
+            }
 
-            float u = float(x) / float(width);
-            float v = float(y) / float(height);
-
-            Ray ray(origin, lowerLeft + u * horizontal + v * vertical);
-            Vector3 point = ray.pointAtParameter(2.0);
-            Vector3 col = color(ray, world);
+            col /= float(numAvgs);
             rgb.push_back(255.99 * col[0]);
             rgb.push_back(255.99 * col[1]);
             rgb.push_back(255.99 * col[2]);
