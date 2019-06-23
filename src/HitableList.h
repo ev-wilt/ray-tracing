@@ -17,6 +17,7 @@ public:
     int listSize;
 };
 
+// Checks for a hit on each hitable in list, saving the closest hit to record
 bool HitableList::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const {
     HitRecord tempRecord;
     bool hit = false;

@@ -17,6 +17,7 @@ public:
     float radius;
 };
 
+// Returns whether the ray was within the the sphere or not, saving the record of the hit
 bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const {
     Vector3 diff = ray.getOrigin() - center;
     float a = dotProduct(ray.getDirection(), ray.getDirection());
