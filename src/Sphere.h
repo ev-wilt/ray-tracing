@@ -10,11 +10,12 @@
 class Sphere : public Hitable {
 public:
     Sphere() {}
-    Sphere(Vector3 c, float r) : center(c), radius(r) {};
+    Sphere(Vector3 c, float r, Material *m) : center(c), radius(r), material(m) {};
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
 
     Vector3 center;
     float radius;
+    Material *material;
 };
 
 // Returns whether the ray was within the the sphere or not, saving the record of the hit
@@ -31,6 +32,7 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) cons
             record.t = t;
             record.p = ray.pointAtParameter(record.t);
             record.normal = (record.p - center) / radius;
+            record.material = material;
             return true;
         }
         t = (-b + sqrt(pow(b, 2) - a * c)) / a;
@@ -38,6 +40,7 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) cons
             record.t = t;
             record.p = ray.pointAtParameter(record.t);
             record.normal = (record.p - center) / radius;
+            record.material = material;
             return true;
         }
     }

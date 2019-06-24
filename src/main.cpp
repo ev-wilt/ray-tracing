@@ -1,38 +1,32 @@
 #include <iostream>
 #include <vector>
 #include <limits>
-#include <random>
-#include <future>
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../lib/stb_image_write.h"
 #include "HitableList.h"
 #include "Sphere.h"
 #include "Camera.h"
-
-// Initializing random variables
-std::random_device randomDevice;
-const std::mt19937 GEN(randomDevice());
-const std::uniform_real_distribution<> DIST(0.0, 1.0);
+#include "Random.h"
+#include "materials/Lambertian.h"
+#include "materials/Metal.h"
 
 // Image size
 const int WIDTH = 600;
 const int HEIGHT = 300;
 
-// Returns a randomized point within the unit sphere
-Vector3 randomPointInUnitSphere() {
-    Vector3 point;
-    while (point.squaredLength() >= 1.0) {
-        point = 2.0 * Vector3(DIST(GEN), DIST(GEN), DIST(GEN)) - Vector3(1.0, 1.0, 1.0);
-    }
-    return point;
-}
-
 // Returns the color that the given ray points to within the world
-Vector3 color(const Ray& ray, Hitable *world) {
+Vector3 color(const Ray& ray, Hitable *world, int depth) {
     HitRecord record;
     if (world->hit(ray, 0.001, std::numeric_limits<float>::max(), record)) {
-        Vector3 target = record.p + record.normal + randomPointInUnitSphere();
-        return 0.5 * color(Ray(record.p, target - record.p), world);
+        Ray scattered;
+        Vector3 attenuation;
+        if (depth < 50 && record.material->scatter(ray, record, attenuation, scattered)) {
+            return attenuation * color(scattered, world, depth + 1);
+        }
+        else {
+            return Vector3(0.0, 0.0, 0.0);
+        }
     }
     else {
         Vector3 unitDirection = unitVector(ray.getDirection());
@@ -43,10 +37,12 @@ Vector3 color(const Ray& ray, Hitable *world) {
 
 int main() {
     int raysPerPixel = 300;
-    Hitable *list[2];
-    list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5);
-    list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100);
-    Hitable *world = new HitableList(list, 2);
+    Hitable *list[4];
+    list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vector3(0.8, 0.3, 0.3)));
+    list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
+    list[2] = new Sphere(Vector3(1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.6, 0.2), 1));
+    list[3] = new Sphere(Vector3(-1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.8, 0.8), 0));
+    Hitable *world = new HitableList(list, 4);
     Camera cam;
     std::vector<unsigned char> rgb;
 
@@ -62,7 +58,7 @@ int main() {
                 float v = float(y + DIST(GEN)) / float(HEIGHT);
                 Ray ray = cam.getRay(u, v);
                 Vector3 point = ray.pointAtParameter(2.0);
-                col += color(ray, world);
+                col += color(ray, world, 0);
             }
 
             col /= float(raysPerPixel);

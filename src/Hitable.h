@@ -7,10 +7,13 @@
 
 #include "Ray.h"
 
+class Material;
+
 struct HitRecord {
     float t;
     Vector3 p;
     Vector3 normal;
+    Material *material;
 };
 
 class Hitable {
