@@ -15,7 +15,7 @@ public:
         horizontal = Vector3(4.0, 0.0, 0.0);
         vertical = Vector3(0.0, 2.0, 0.0);
     }
-    Ray getRay(float u, float v) { return Ray(origin, lowerLeft + u * horizontal + v * vertical); }
+    Ray getRay(float u, float v) const { return Ray(origin, lowerLeft + u * horizontal + v * vertical); }
 
     Vector3 origin;
     Vector3 lowerLeft;
