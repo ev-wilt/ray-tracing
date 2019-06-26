@@ -14,8 +14,8 @@
 #include "materials/Dielectric.h"
 
 // Image size
-const int WIDTH = 600;
-const int HEIGHT = 300;
+const int WIDTH = 2560;
+const int HEIGHT = 1440;
 
 // Returns the color that the given ray points to within the world
 Vector3 color(const Ray& ray, Hitable *world, int depth) {
@@ -38,15 +38,15 @@ Vector3 color(const Ray& ray, Hitable *world, int depth) {
 }
 
 int main() {
-    int raysPerPixel = 300;
+    int raysPerPixel = 100;
     Hitable *list[5];
-    list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vector3(0.8, 0.3, 0.3)));
+    list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vector3(0.1, 0.2, 0.5)));
     list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
     list[2] = new Sphere(Vector3(1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.6, 0.2), 1));
     list[3] = new Sphere(Vector3(-1.0, 0.0, -1.0), 0.5, new Dielectric(1.5));
     list[4] = new Sphere(Vector3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5));
     Hitable *world = new HitableList(list, 5);
-    Camera cam;
+    Camera cam(Vector3(-2,2,1), Vector3(0,0,-1), Vector3(0,1,0), 50, float(WIDTH) / float(HEIGHT));
     std::size_t max = WIDTH * HEIGHT * 3;
     unsigned char *buffer = new unsigned char[WIDTH * HEIGHT * 3];
     std::size_t cores = std::thread::hardware_concurrency();

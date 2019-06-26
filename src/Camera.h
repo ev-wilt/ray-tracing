@@ -5,17 +5,27 @@
 #ifndef RAYTRACING_CAMERA_H
 #define RAYTRACING_CAMERA_H
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "Ray.h"
 
 class Camera {
 public:
-    Camera() {
-        origin = Vector3(0.0, 0.0, 0.0);
-        lowerLeft = Vector3(-2.0, -1.0, -1.0);
-        horizontal = Vector3(4.0, 0.0, 0.0);
-        vertical = Vector3(0.0, 2.0, 0.0);
+    Camera(Vector3 position, Vector3 lookAt, Vector3 viewUp, float vertFoV, float aspect) {
+        Vector3 u, v, w;
+        float radians = vertFoV * M_PI / 180;
+        float halfHeight = tan(radians / 2);
+        float halfWidth = aspect * halfHeight;
+        w = unitVector(position - lookAt);
+        u = unitVector(crossProduct(viewUp, w));
+        v = crossProduct(w, u);
+        origin = position;
+        lowerLeft = origin - halfWidth * u - halfHeight * v - w;
+        horizontal = 2 * halfWidth * u;
+        vertical = 2 * halfHeight * v;
     }
-    Ray getRay(float u, float v) const { return Ray(origin, lowerLeft + u * horizontal + v * vertical); }
+    Ray getRay(float s, float t) const { return Ray(origin, lowerLeft + s * horizontal + t * vertical - origin); }
 
     Vector3 origin;
     Vector3 lowerLeft;
