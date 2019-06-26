@@ -11,6 +11,7 @@
 #include "Random.h"
 #include "materials/Lambertian.h"
 #include "materials/Metal.h"
+#include "materials/Dielectric.h"
 
 // Image size
 const int WIDTH = 600;
@@ -38,47 +39,48 @@ Vector3 color(const Ray& ray, Hitable *world, int depth) {
 
 int main() {
     int raysPerPixel = 300;
-    Hitable *list[4];
+    Hitable *list[5];
     list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vector3(0.8, 0.3, 0.3)));
     list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
     list[2] = new Sphere(Vector3(1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.6, 0.2), 1));
-    list[3] = new Sphere(Vector3(-1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.8, 0.8), 0));
-    Hitable *world = new HitableList(list, 4);
+    list[3] = new Sphere(Vector3(-1.0, 0.0, -1.0), 0.5, new Dielectric(1.5));
+    list[4] = new Sphere(Vector3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5));
+    Hitable *world = new HitableList(list, 5);
     Camera cam;
     std::size_t max = WIDTH * HEIGHT * 3;
-    unsigned char buffer[WIDTH * HEIGHT * 3];
+    unsigned char *buffer = new unsigned char[WIDTH * HEIGHT * 3];
     std::size_t cores = std::thread::hardware_concurrency();
     volatile std::atomic<std::size_t> count(0);
     std::vector<std::future<void>> futures;
 
     while (--cores) {
         futures.emplace_back(
-            std::async([=, &count, &world, &buffer]() {
-                while (true) {
-                    std::size_t index = count++;
-                    if (index * 3 + 2 >= max) break;
-                    std::size_t x = index % WIDTH;
-                    std::size_t y = HEIGHT - (index / WIDTH);
+                std::async([=, &count, &world, &buffer]() {
+                    while (true) {
+                        std::size_t index = count++;
+                        if (index * 3 + 2 > max) break;
+                        std::size_t x = index % WIDTH;
+                        std::size_t y = HEIGHT - (index / WIDTH);
 
-                    // Send a given number of rays per pixel
-                    // to find the avg color
-                    Vector3 col(0.0, 0.0, 0.0);
-                    for (int s = 0; s < raysPerPixel; ++s) {
-                        float u = float(x + DIST(GEN)) / float(WIDTH);
-                        float v = float(y + DIST(GEN)) / float(HEIGHT);
-                        Ray ray = cam.getRay(u, v);
-                        Vector3 point = ray.pointAtParameter(2.0);
-                        col += color(ray, world, 0);
+                        // Send a given number of rays per pixel
+                        // to find the avg color
+                        Vector3 col(0.0, 0.0, 0.0);
+                        for (int s = 0; s < raysPerPixel; ++s) {
+                            float u = float(x + DIST(GEN)) / float(WIDTH);
+                            float v = float(y + DIST(GEN)) / float(HEIGHT);
+                            Ray ray = cam.getRay(u, v);
+                            Vector3 point = ray.pointAtParameter(2.0);
+                            col += color(ray, world, 0);
+                        }
+
+                        col /= float(raysPerPixel);
+                        col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+
+                        buffer[index * 3] = 255.99 * col[0];
+                        buffer[index * 3 + 1] = 255.99 * col[1];
+                        buffer[index * 3 + 2] = 255.99 * col[2];
                     }
-
-                    col /= float(raysPerPixel);
-                    col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
-
-                    buffer[index * 3] = 255.99 * col[0];
-                    buffer[index * 3 + 1] = 255.99 * col[1];
-                    buffer[index * 3 + 2] = 255.99 * col[2];
-                }
-            })
+                })
         );
     }
 
@@ -89,7 +91,6 @@ int main() {
 
     // Write buffer to a .png
     stbi_write_png("output.png", WIDTH, HEIGHT, 3, buffer, 0);
+    delete[](buffer);
     return 0;
 }
-
-

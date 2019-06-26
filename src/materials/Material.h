@@ -28,4 +28,22 @@ Vector3 reflect(const Vector3& vec, const Vector3& unitVec) {
     return vec - 2 * dotProduct(vec, unitVec) * unitVec;
 }
 
+bool refract(const Vector3& vec, const Vector3& n, float niOverNt, Vector3& refracted) {
+    Vector3 unitVec = unitVector(vec);
+    float dot = dotProduct(unitVec, n);
+    float discriminant = 1.0 - pow(niOverNt, 2) * (1.0 - pow(dot, 2));
+    if (discriminant > 0) {
+        refracted = niOverNt * (unitVec - n * dot) - n * sqrt(discriminant);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+float schlick(float cosine, float refractiveIndex) {
+    float r0 = pow(((1.0 - refractiveIndex) / (1.0 + refractiveIndex)), 2);
+    return r0 + (1.0 - r0) * pow((1.0 - cosine), 5);
+}
+
 #endif //RAYTRACING_MATERIAL_H
