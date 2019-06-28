@@ -14,8 +14,8 @@
 #include "materials/Dielectric.h"
 
 // Image size
-const int WIDTH = 2560;
-const int HEIGHT = 1440;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
 
 // Returns the color that the given ray points to within the world
 Vector3 color(const Ray& ray, Hitable *world, int depth) {
@@ -42,12 +42,17 @@ int main() {
     Hitable *list[5];
     list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vector3(0.1, 0.2, 0.5)));
     list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
-    list[2] = new Sphere(Vector3(1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.6, 0.2), 1));
+    list[2] = new Sphere(Vector3(1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.6, 0.2), 0.5));
     list[3] = new Sphere(Vector3(-1.0, 0.0, -1.0), 0.5, new Dielectric(1.5));
     list[4] = new Sphere(Vector3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5));
     Hitable *world = new HitableList(list, 5);
-    Camera cam(Vector3(-2,2,1), Vector3(0,0,-1), Vector3(0,1,0), 50, float(WIDTH) / float(HEIGHT));
-    std::size_t max = WIDTH * HEIGHT * 3;
+
+    Vector3 camPos = Vector3(3,3,2);
+    Vector3 camDir = Vector3(0,0,-1);
+    float focusDist = (camDir - camPos).length();
+    Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 2.0, focusDist);
+
+    const std::size_t max = WIDTH * HEIGHT * 3;
     unsigned char *buffer = new unsigned char[WIDTH * HEIGHT * 3];
     std::size_t cores = std::thread::hardware_concurrency();
     volatile std::atomic<std::size_t> count(0);
@@ -69,7 +74,6 @@ int main() {
                             float u = float(x + DIST(GEN)) / float(WIDTH);
                             float v = float(y + DIST(GEN)) / float(HEIGHT);
                             Ray ray = cam.getRay(u, v);
-                            Vector3 point = ray.pointAtParameter(2.0);
                             col += color(ray, world, 0);
                         }
 
