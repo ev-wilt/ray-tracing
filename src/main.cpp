@@ -14,8 +14,8 @@
 #include "materials/Dielectric.h"
 
 // Image size
-const int WIDTH = 1280;
-const int HEIGHT = 720;
+const int WIDTH = 1920;
+const int HEIGHT = 1080;
 
 // Returns the color that the given ray points to within the world
 Vector3 color(const Ray& ray, Hitable *world, int depth) {
@@ -37,20 +37,40 @@ Vector3 color(const Ray& ray, Hitable *world, int depth) {
     }
 }
 
+Hitable *randomScene() {
+    int size = 500;
+    int index = 1;
+    Hitable **list = new Hitable*[size + 1];
+    list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(Vector3(0.5, 0.5, 0.5)));
+    for (int i = -11; i < 11; ++i) {
+        for (int j = -11; j < 11; ++j) {
+            float materialProb = DIST(GEN);
+            Vector3 center(i + 0.9 * DIST(GEN), 0.2, j + 0.9 * DIST(GEN));
+            if (materialProb < 0.8) {
+                list[index++] = new Sphere(center, 0.2, new Lambertian(Vector3(DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN))));
+            }
+            else if (materialProb < 0.95) {
+                list[index++] = new Sphere(center, 0.2, new Metal(Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN))), 0.0));
+            }
+            else {
+                list[index++] = new Sphere(center, 0.2, new Dielectric(1.5));
+            }
+        }
+    }
+
+    list[index++] = new Sphere(Vector3(0, 1, 0), 1.0, new Dielectric(1.5));
+    list[index++] = new Sphere(Vector3(-4, 1, 0), 1.0, new Lambertian(Vector3(0.4, 0.2, 0.1)));
+    list[index++] = new Sphere(Vector3(4, 1, 0), 1.0, new Metal(Vector3(0.7, 0.6, 0.5), 0.0));
+    return new HitableList(list, index);
+}
+
 int main() {
     int raysPerPixel = 100;
-    Hitable *list[5];
-    list[0] = new Sphere(Vector3(0.0, 0.0, -1.0), 0.5, new Lambertian(Vector3(0.1, 0.2, 0.5)));
-    list[1] = new Sphere(Vector3(0.0, -100.5, -1.0), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
-    list[2] = new Sphere(Vector3(1.0, 0.0, -1.0), 0.5, new Metal(Vector3(0.8, 0.6, 0.2), 0.5));
-    list[3] = new Sphere(Vector3(-1.0, 0.0, -1.0), 0.5, new Dielectric(1.5));
-    list[4] = new Sphere(Vector3(-1.0, 0.0, -1.0), -0.45, new Dielectric(1.5));
-    Hitable *world = new HitableList(list, 5);
-
-    Vector3 camPos = Vector3(3,3,2);
-    Vector3 camDir = Vector3(0,0,-1);
-    float focusDist = (camDir - camPos).length();
-    Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 2.0, focusDist);
+    Hitable *world = randomScene();
+    Vector3 camPos = Vector3(13,2,3);
+    Vector3 camDir = Vector3(0,0,0);
+    float focusDist = 10;
+    Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist);
 
     const std::size_t max = WIDTH * HEIGHT * 3;
     unsigned char *buffer = new unsigned char[WIDTH * HEIGHT * 3];
@@ -89,8 +109,8 @@ int main() {
     }
 
     // Wait for each future
-    for (int i = 0; i < futures.size(); ++i) {
-        futures[i].get();
+    for (std::future<void> &fut: futures) {
+        fut.get();
     }
 
     // Write buffer to a .png
