@@ -34,6 +34,8 @@ public:
         horizontal = 2 * halfWidth * focusDist * u;
         vertical = 2 * halfHeight * focusDist * v;
     }
+
+    // Returns the ray cast at the given coordinates
     Ray getRay(float s, float t) const {
         Vector3 point = lensRadius * randomPointInUnitDisk();
         Vector3 offset = u * point.x() + v * point.y();

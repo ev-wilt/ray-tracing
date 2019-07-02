@@ -37,6 +37,7 @@ Vector3 color(const Ray& ray, Hitable *world, int depth) {
     }
 }
 
+// Generates a random scene with 3 large spheres + several small spheres
 Hitable *randomScene() {
     int size = 500;
     int index = 1;

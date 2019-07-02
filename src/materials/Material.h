@@ -24,10 +24,13 @@ Vector3 randomPointInUnitSphere() {
     return point;
 }
 
+// Returns the vector that represents a reflection of vec
 Vector3 reflect(const Vector3& vec, const Vector3& unitVec) {
     return vec - 2 * dotProduct(vec, unitVec) * unitVec;
 }
 
+// Returns whether a refraction occurs or not and, if it does, sets refracted to
+// the refraction of vec
 bool refract(const Vector3& vec, const Vector3& n, float niOverNt, Vector3& refracted) {
     Vector3 unitVec = unitVector(vec);
     float dot = dotProduct(unitVec, n);
@@ -41,6 +44,7 @@ bool refract(const Vector3& vec, const Vector3& n, float niOverNt, Vector3& refr
     }
 }
 
+// Returns the result of Schlick's approximation, the reflection coefficient
 float schlick(float cosine, float refractiveIndex) {
     float r0 = pow(((1.0 - refractiveIndex) / (1.0 + refractiveIndex)), 2);
     return r0 + (1.0 - r0) * pow((1.0 - cosine), 5);
