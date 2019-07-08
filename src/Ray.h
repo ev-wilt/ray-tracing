@@ -10,12 +10,15 @@
 class Ray {
 public:
     Ray() {}
-    Ray(const Vector3& origin, const Vector3& direction) { this->origin = origin; this->direction = direction; }
+    Ray(const Vector3& ori, const Vector3& dir, float time) : origin(ori), direction(dir), creationTime(time) {}
+
     Vector3 getOrigin() const { return origin; }
     Vector3 getDirection() const { return direction; }
+    float getTime() const { return creationTime; }
     Vector3 pointAtParameter(float t) const { return origin + t * direction; }
 
     Vector3 origin;
     Vector3 direction;
+    float creationTime;
 };
 #endif //RAYTRACING_RAY_H

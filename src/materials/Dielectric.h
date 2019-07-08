@@ -11,6 +11,7 @@
 class Dielectric : public Material {
 public:
     Dielectric(float ref) : refractiveIndex(ref) {}
+
     virtual bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const {
         Vector3 outwardNormal;
         Vector3 reflected = reflect(rayIn.getDirection(), record.normal);
@@ -39,10 +40,10 @@ public:
             reflectProbability = 1.0;
         }
         if (DIST(GEN) < reflectProbability) {
-            scattered = Ray(record.p, reflected);
+            scattered = Ray(record.p, reflected, rayIn.getTime());
         }
         else {
-            scattered = Ray(record.p, refracted);
+            scattered = Ray(record.p, refracted, rayIn.getTime());
         }
         return true;
     }

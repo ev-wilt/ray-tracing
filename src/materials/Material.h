@@ -6,7 +6,7 @@
 #define RAYTRACING_MATERIAL_H
 
 #include "../Ray.h"
-#include "../Hitable.h"
+#include "../hitables/Hitable.h"
 #include "../Random.h"
 
 class Material {

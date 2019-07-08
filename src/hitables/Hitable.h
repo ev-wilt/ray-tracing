@@ -5,7 +5,7 @@
 #ifndef RAYTRACING_HITABLE_H
 #define RAYTRACING_HITABLE_H
 
-#include "Ray.h"
+#include "../Ray.h"
 
 class Material;
 

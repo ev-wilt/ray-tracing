@@ -12,6 +12,7 @@ class Vector3 {
 public:
     Vector3() {}
     Vector3(float val0, float val1, float val2) { vals[0] = val0; vals[1] = val1; vals[2] = val2; }
+
     inline float x() const { return vals[0]; }
     inline float y() const { return vals[1]; }
     inline float z() const { return vals[2]; }

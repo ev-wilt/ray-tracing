@@ -5,17 +5,18 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../lib/stb_image_write.h"
-#include "HitableList.h"
-#include "Sphere.h"
+#include "hitables/HitableList.h"
+#include "hitables/Sphere.h"
 #include "Camera.h"
 #include "Random.h"
 #include "materials/Lambertian.h"
 #include "materials/Metal.h"
 #include "materials/Dielectric.h"
+#include "hitables/MovingSphere.h"
 
 // Image size
-const int WIDTH = 1920;
-const int HEIGHT = 1080;
+const int WIDTH = 640;
+const int HEIGHT = 480;
 
 // Returns the color that the given ray points to within the world
 Vector3 color(const Ray& ray, Hitable *world, int depth) {
@@ -37,24 +38,26 @@ Vector3 color(const Ray& ray, Hitable *world, int depth) {
     }
 }
 
-// Generates a random scene with 3 large spheres + several small spheres
+// Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
 Hitable *randomScene() {
-    int size = 500;
+    int size = 50000;
     int index = 1;
     Hitable **list = new Hitable*[size + 1];
     list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(Vector3(0.5, 0.5, 0.5)));
-    for (int i = -11; i < 11; ++i) {
-        for (int j = -11; j < 11; ++j) {
+    for (int i = -10; i < 10; ++i) {
+        for (int j = -10; j < 10; ++j) {
             float materialProb = DIST(GEN);
             Vector3 center(i + 0.9 * DIST(GEN), 0.2, j + 0.9 * DIST(GEN));
-            if (materialProb < 0.8) {
-                list[index++] = new Sphere(center, 0.2, new Lambertian(Vector3(DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN))));
-            }
-            else if (materialProb < 0.95) {
-                list[index++] = new Sphere(center, 0.2, new Metal(Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN))), 0.0));
-            }
-            else {
-                list[index++] = new Sphere(center, 0.2, new Dielectric(1.5));
+            if ((center - Vector3(4, 0.2, 0)).length() > 0.9) {
+                if (materialProb < 0.8) {
+                    list[index++] = new MovingSphere(center, center + Vector3(0, 0.5 * DIST(GEN), 0), 0.0, 1.0 , 0.2, new Lambertian(Vector3(DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN))));
+                }
+                else if (materialProb < 0.95) {
+                    list[index++] = new Sphere(center, 0.2, new Metal(Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN))), 0.0));
+                }
+                else {
+                    list[index++] = new Sphere(center, 0.2, new Dielectric(1.5));
+                }
             }
         }
     }
@@ -71,7 +74,7 @@ int main() {
     Vector3 camPos = Vector3(13,2,3);
     Vector3 camDir = Vector3(0,0,0);
     float focusDist = 10;
-    Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist);
+    Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist, 0.0, 1.0);
 
     const std::size_t max = WIDTH * HEIGHT * 3;
     unsigned char *buffer = new unsigned char[WIDTH * HEIGHT * 3];

@@ -10,9 +10,10 @@
 class Lambertian : public Material {
 public:
     Lambertian(const Vector3& alb) : albedo(alb) {}
+
     virtual bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const {
         Vector3 target = record.p + record.normal + randomPointInUnitSphere();
-        scattered = Ray(record.p, target - record.p);
+        scattered = Ray(record.p, target - record.p, rayIn.getTime());
         attenuation = albedo;
         return true;
     }

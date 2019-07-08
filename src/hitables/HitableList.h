@@ -11,6 +11,7 @@ class HitableList : public Hitable {
 public:
     HitableList() {}
     HitableList(Hitable **l, int n) { list = l; listSize = n; }
+
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
 
     Hitable **list;

@@ -21,7 +21,9 @@ Vector3 randomPointInUnitDisk() {
 
 class Camera {
 public:
-    Camera(Vector3 position, Vector3 lookAt, Vector3 viewUp, float vertFoV, float aspect, float aperture, float focusDist) {
+    Camera(Vector3 position, Vector3 lookAt, Vector3 viewUp, float vertFoV, float aspect, float aperture, float focusDist, float tStart, float tEnd) :
+            timeStart(tStart), timeEnd(tEnd)
+    {
         float radians = vertFoV * M_PI / 180;
         float halfHeight = tan(radians / 2);
         float halfWidth = aspect * halfHeight;
@@ -39,7 +41,8 @@ public:
     Ray getRay(float s, float t) const {
         Vector3 point = lensRadius * randomPointInUnitDisk();
         Vector3 offset = u * point.x() + v * point.y();
-        return Ray(origin + offset, lowerLeft + s * horizontal + t * vertical - origin - offset);
+        float creationtTime = timeStart + DIST(GEN) * (timeEnd - timeStart);
+        return Ray(origin + offset, lowerLeft + s * horizontal + t * vertical - origin - offset, creationtTime);
     }
 
     Vector3 origin;
@@ -48,6 +51,7 @@ public:
     Vector3 vertical;
     Vector3 u, v;
     float lensRadius;
+    float timeStart, timeEnd;
 };
 
 #endif //RAYTRACING_CAMERA_H
