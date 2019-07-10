@@ -15,7 +15,7 @@ public:
 
     Vector3 center;
     float radius;
-    Material *material;
+    std::shared_ptr<Material> material;
 };
 
 // Returns whether the ray was within the the sphere or not, saving the record of the hit

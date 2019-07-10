@@ -10,11 +10,11 @@
 class HitableList : public Hitable {
 public:
     HitableList() {}
-    HitableList(Hitable **l, int n) { list = l; listSize = n; }
+    HitableList(std::vector<std::unique_ptr<Hitable>> l, int n) : list(std::move(l)), listSize(n) {};
 
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
 
-    Hitable **list;
+    std::vector<std::unique_ptr<Hitable>> list;
     int listSize;
 };
 

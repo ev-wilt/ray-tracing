@@ -18,7 +18,7 @@ public:
     Vector3 centerStart, centerEnd;
     float timeStart, timeEnd;
     float radius;
-    Material *material;
+    std::shared_ptr<Material> material;
 };
 
 Vector3 MovingSphere::center(float time) const {

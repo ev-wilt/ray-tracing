@@ -13,7 +13,7 @@ struct HitRecord {
     float t;
     Vector3 p;
     Vector3 normal;
-    Material *material;
+    std::shared_ptr<Material> material;
 };
 
 class Hitable {
