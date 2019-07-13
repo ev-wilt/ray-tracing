@@ -104,9 +104,9 @@ int main() {
                         col /= float(raysPerPixel);
                         col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 
-                        buffer.get()[index * 3] = 255.99 * col[0];
-                        buffer.get()[index * 3 + 1] = 255.99 * col[1];
-                        buffer.get()[index * 3 + 2] = 255.99 * col[2];
+                        buffer.get()[index * 3] = (unsigned char)(255.99 * col[0]);
+                        buffer.get()[index * 3 + 1] = (unsigned char)(255.99 * col[1]);
+                        buffer.get()[index * 3 + 2] = (unsigned char)(255.99 * col[2]);
                     }
                 })
         );

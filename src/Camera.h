@@ -41,8 +41,8 @@ public:
     Ray getRay(float s, float t) const {
         Vector3 point = lensRadius * randomPointInUnitDisk();
         Vector3 offset = u * point.x() + v * point.y();
-        float creationtTime = timeStart + DIST(GEN) * (timeEnd - timeStart);
-        return Ray(origin + offset, lowerLeft + s * horizontal + t * vertical - origin - offset, creationtTime);
+        float creationTime = timeStart + DIST(GEN) * (timeEnd - timeStart);
+        return {origin + offset, lowerLeft + s * horizontal + t * vertical - origin - offset, creationTime};
     }
 
     Vector3 origin;

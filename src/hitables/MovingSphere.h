@@ -14,6 +14,7 @@ public:
         centerStart(cStart), centerEnd(cEnd), timeStart(tStart), timeEnd(tEnd), radius(r), material(m) {};
 
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
+    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const;
     Vector3 center(float time) const;
     Vector3 centerStart, centerEnd;
     float timeStart, timeEnd;
@@ -54,5 +55,13 @@ bool MovingSphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record
     return false;
 }
 
+// Returns whether the object has a bounding box and sets the boundingBox to it
+// if the object has one
+bool MovingSphere::boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox &boundingBox) const {
+    auto boxStart = AxisAlignedBoundingBox(center(tStart) - Vector3(radius, radius, radius), center(tStart) + Vector3(radius, radius, radius));
+    auto boxEnd = AxisAlignedBoundingBox(center(tStart) - Vector3(radius, radius, radius), center(tStart) + Vector3(radius, radius, radius));
+    boundingBox = surroundingBox(boxStart, boxEnd);
+    return true;
+}
 
 #endif //RAYTRACING_MOVINGSPHERE_H

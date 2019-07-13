@@ -17,12 +17,11 @@ public:
     Vector3 getMax() const { return max; }
     bool hit(const Ray& ray, float tMin, float tMax) const {
         for (int i = 0; i < 3; ++i) {
-            float tStart = fminf((min[i] - ray.getOrigin()[i]) / ray.getDirection()[i],
-                                 (max[i] - ray.getOrigin()[i]) / ray.getDirection()[i]);
-            float tEnd = fmaxf((min[i] - ray.getOrigin()[i]) / ray.getDirection()[i],
-                                 (max[i] - ray.getOrigin()[i]) / ray.getDirection()[i]);
-            tMin = fmaxf(tStart, tMin);
-            tMax = fminf(tEnd, tMax);
+            float inverseDir = 1.0f / ray.getDirection()[i];
+            float tStart = (min[i] - ray.getOrigin()[i]) * inverseDir;
+            float tEnd = (max[i] - ray.getOrigin()[i]) * inverseDir;
+            tMin = tStart > tMin ? tStart : tMin;
+            tMax = tEnd < tMax ? tEnd : tMax;
             if (tMax <= tMin) return false;
         }
         return true;
@@ -31,5 +30,16 @@ public:
     Vector3 min;
     Vector3 max;
 };
+
+// Returns the box surrounding both bStart and bEnd
+AxisAlignedBoundingBox surroundingBox(AxisAlignedBoundingBox bStart, AxisAlignedBoundingBox bEnd) {
+    Vector3 small(fmin(bStart.getMin().x(), bEnd.getMin().x()),
+                  fmin(bStart.getMin().y(), bEnd.getMin().y()),
+                  fmin(bStart.getMin().z(), bEnd.getMin().z()));
+    Vector3 big(fmax(bStart.getMax().x(), bEnd.getMax().x()),
+                fmax(bStart.getMax().y(), bEnd.getMax().y()),
+                fmax(bStart.getMax().z(), bEnd.getMax().z()));
+    return {small, big};
+}
 
 #endif //RAYTRACING_AXISALIGNEDBOUNDINGBOX_H

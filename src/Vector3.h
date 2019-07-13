@@ -58,31 +58,31 @@ inline std::ostream& operator<<(std::ostream &stream, const Vector3 &vec) {
 }
 
 inline Vector3 operator+(const Vector3 &vec1, const Vector3 &vec2) {
-    return Vector3(vec1.vals[0] + vec2.vals[0], vec1.vals[1] + vec2.vals[1], vec1.vals[2] + vec2.vals[2]);
+    return {vec1.vals[0] + vec2.vals[0], vec1.vals[1] + vec2.vals[1], vec1.vals[2] + vec2.vals[2]};
 }
 
 inline Vector3 operator-(const Vector3 &vec1, const Vector3 &vec2) {
-    return Vector3(vec1.vals[0] - vec2.vals[0], vec1.vals[1] - vec2.vals[1], vec1.vals[2] - vec2.vals[2]);
+    return {vec1.vals[0] - vec2.vals[0], vec1.vals[1] - vec2.vals[1], vec1.vals[2] - vec2.vals[2]};
 }
 
 inline Vector3 operator*(const Vector3 &vec1, const Vector3 &vec2) {
-    return Vector3(vec1.vals[0] * vec2.vals[0], vec1.vals[1] * vec2.vals[1], vec1.vals[2] * vec2.vals[2]);
+    return {vec1.vals[0] * vec2.vals[0], vec1.vals[1] * vec2.vals[1], vec1.vals[2] * vec2.vals[2]};
 }
 
 inline Vector3 operator/(const Vector3 &vec1, const Vector3 &vec2) {
-    return Vector3(vec1.vals[0] / vec2.vals[0], vec1.vals[1] / vec2.vals[1], vec1.vals[2] / vec2.vals[2]);
+    return {vec1.vals[0] / vec2.vals[0], vec1.vals[1] / vec2.vals[1], vec1.vals[2] / vec2.vals[2]};
 }
 
 inline Vector3 operator*(float scale, const Vector3 &vec) {
-    return Vector3(scale * vec.vals[0], scale * vec.vals[1], scale * vec.vals[2]);
+    return {scale * vec.vals[0], scale * vec.vals[1], scale * vec.vals[2]};
 }
 
 inline Vector3 operator/(Vector3 vec, float scale) {
-    return Vector3(vec.vals[0] / scale, vec.vals[1] / scale, vec.vals[2] / scale);
+    return {vec.vals[0] / scale, vec.vals[1] / scale, vec.vals[2] / scale};
 }
 
 inline Vector3 operator*(const Vector3 &vec, float scale) {
-    return Vector3(scale * vec.vals[0], scale * vec.vals[1], scale * vec.vals[2]);
+    return {scale * vec.vals[0], scale * vec.vals[1], scale * vec.vals[2]};
 }
 
 inline float dotProduct(const Vector3 &vec1, const Vector3 &vec2) {
@@ -90,9 +90,9 @@ inline float dotProduct(const Vector3 &vec1, const Vector3 &vec2) {
 }
 
 inline Vector3 crossProduct(const Vector3 &vec1, const Vector3 &vec2) {
-    return Vector3( (vec1.vals[1] * vec2.vals[2] - vec1.vals[2] * vec2.vals[1]),
-                    (-(vec1.vals[0] * vec2.vals[2] - vec1.vals[2] * vec2.vals[0])),
-                    (vec1.vals[0] * vec2.vals[1] - vec1.vals[1] * vec2.vals[0]));
+    return {(vec1.vals[1] * vec2.vals[2] - vec1.vals[2] * vec2.vals[1]),
+            (-(vec1.vals[0] * vec2.vals[2] - vec1.vals[2] * vec2.vals[0])),
+            (vec1.vals[0] * vec2.vals[1] - vec1.vals[1] * vec2.vals[0])};
 }
 
 inline void Vector3::operator=(const Vector3 &vec) {

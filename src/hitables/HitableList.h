@@ -13,6 +13,7 @@ public:
     HitableList(std::vector<std::unique_ptr<Hitable>> l, int n) : list(std::move(l)), listSize(n) {};
 
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
+    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const;
 
     std::vector<std::unique_ptr<Hitable>> list;
     int listSize;
@@ -32,6 +33,29 @@ bool HitableList::hit(const Ray &ray, float tMin, float tMax, HitRecord &record)
         }
     }
     return hit;
+}
+
+// Returns whether all objects have a bounding box and sets the boundingBox to a box
+// containing all objects if they all have one
+bool HitableList::boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox &boundingBox) const {
+    if (listSize > 1) return false;
+    AxisAlignedBoundingBox tempBox;
+    bool firstTrue = list[0]->boundingBox(tStart, tEnd, tempBox);
+    if (!firstTrue) {
+        return false;
+    }
+    else {
+        boundingBox = tempBox;
+    }
+    for (int i = 1; i < listSize; ++i) {
+        if (list[i]->boundingBox(tStart, tEnd, tempBox)) {
+            boundingBox = surroundingBox(boundingBox, tempBox);
+        }
+        else {
+            return false;
+        }
+    }
+    return true;
 }
 
 #endif //RAYTRACING_HITABLELIST_H

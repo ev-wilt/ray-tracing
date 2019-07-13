@@ -12,6 +12,7 @@ public:
     Sphere() {}
     Sphere(Vector3 c, float r, Material *m) : center(c), radius(r), material(m) {};
     virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
+    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const;
 
     Vector3 center;
     float radius;
@@ -45,6 +46,13 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) cons
         }
     }
     return false;
+}
+
+// Returns whether the object has a bounding box and sets the boundingBox to it
+// if the object has one
+bool Sphere::boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox &boundingBox) const {
+    boundingBox = AxisAlignedBoundingBox(center - Vector3(radius, radius, radius), center + Vector3(radius, radius, radius));
+    return true;
 }
 
 #endif //RAYTRACING_SPHERE_H
