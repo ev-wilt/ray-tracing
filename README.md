@@ -3,7 +3,7 @@
 ![Example Photo](example.png "Example Photo")
 
 ## What this is
-This project is a path tracer that was built using Peter Shirley's "Ray Tracing in One Weekend" book as a base. I've also added some extra features of my own, such as multithreading and .png exporting.
+This project is a path tracer that was built using Peter Shirley's "Ray Tracing" series of books as a base. I've also added some extra features of my own, such as multithreading and .png exporting.
 
 ## How it works
 Simply compile the program (no external dependencies needed), run it, and the image will be output to the same directory as the executable.
