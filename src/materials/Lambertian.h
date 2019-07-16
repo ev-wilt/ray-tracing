@@ -6,19 +6,21 @@
 #define RAYTRACING_LAMBERTIAN_H
 
 #include "Material.h"
+#include "../textures/Texture.h"
 
 class Lambertian : public Material {
 public:
-    Lambertian(const Vector3& alb) : albedo(alb) {}
+    Lambertian(Texture *alb) : albedo(alb) {}
+    Lambertian(std::unique_ptr<Texture> alb) : albedo(std::move(alb)) {}
 
-    virtual bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const {
+    bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const override {
         Vector3 target = record.p + record.normal + randomPointInUnitSphere();
         scattered = Ray(record.p, target - record.p, rayIn.getTime());
-        attenuation = albedo;
+        attenuation = albedo->value(0, 0, record.p);
         return true;
     }
 
-    Vector3 albedo;
+    std::unique_ptr<Texture> albedo;
 };
 
 #endif //RAYTRACING_LAMBERTIAN_H

@@ -12,8 +12,8 @@ public:
     HitableList() {}
     HitableList(std::vector<std::unique_ptr<Hitable>> l, int n) : list(std::move(l)), listSize(n) {};
 
-    virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
-    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const;
+    bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const override;
+    bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const override;
 
     std::vector<std::unique_ptr<Hitable>> list;
     int listSize;

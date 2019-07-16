@@ -13,10 +13,13 @@
 #include "materials/Metal.h"
 #include "materials/Dielectric.h"
 #include "hitables/MovingSphere.h"
+#include "hitables/BvhNode.h"
+#include "textures/ConstantTexture.h"
+#include "textures/CheckerTexture.h"
 
 // Image size
-const int WIDTH = 640;
-const int HEIGHT = 480;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
 
 // Returns the color that the given ray points to within the world
 Vector3 color(const Ray& ray, Hitable *world, int depth) {
@@ -43,17 +46,24 @@ Hitable *randomScene() {
     int size = 50000;
     int index = 0;
     std::vector<std::unique_ptr<Hitable>> list(size + 1);
-    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(Vector3(0.5, 0.5, 0.5))));
+    auto checkerTex = std::unique_ptr<Texture>(new CheckerTexture(
+            new ConstantTexture(Vector3(0.2, 0.3, 0.1)),
+            new ConstantTexture(Vector3 (0.9, 0.9, 0.9))));
+
+    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(std::move(checkerTex))));
     for (int i = -10; i < 10; ++i) {
         for (int j = -10; j < 10; ++j) {
             float materialProb = DIST(GEN);
             Vector3 center(i + 0.9 * DIST(GEN), 0.2, j + 0.9 * DIST(GEN));
             if ((center - Vector3(4, 0.2, 0)).length() > 0.9) {
                 if (materialProb < 0.8) {
-                    list[index++] = std::unique_ptr<Hitable>(new MovingSphere(center, center + Vector3(0, 0.5 * DIST(GEN), 0), 0.0, 1.0 , 0.2, new Lambertian(Vector3(DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN)))));
+                    Vector3 randomColor = Vector3(DIST(GEN) * DIST(GEN),DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN));
+                    Vector3 centerEnd = center + Vector3(0, 0.5 * DIST(GEN), 0);
+                    list[index++] = std::unique_ptr<Hitable>(new MovingSphere(center, centerEnd, 0.0, 1.0, 0.2, new Lambertian(new ConstantTexture(randomColor))));
                 }
                 else if (materialProb < 0.95) {
-                    list[index++] = std::unique_ptr<Hitable>(new Sphere(center, 0.2, new Metal(Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN))), 0.0)));
+                    Vector3 randomColor = Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)));
+                    list[index++] = std::unique_ptr<Hitable>(new Sphere(center, 0.2, new Metal(randomColor, 0.0)));
                 }
                 else {
                     list[index++] = std::unique_ptr<Hitable>(new Sphere(center, 0.2, new Dielectric(1.5)));
@@ -63,7 +73,7 @@ Hitable *randomScene() {
     }
 
     list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(0, 1, 0), 1.0, new Dielectric(1.5)));
-    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(-4, 1, 0), 1.0, new Lambertian(Vector3(0.4, 0.2, 0.1))));
+    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(-4, 1, 0), 1.0, new Lambertian(new ConstantTexture(Vector3(0.4, 0.2, 0.1)))));
     list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(4, 1, 0), 1.0, new Metal(Vector3(0.7, 0.6, 0.5), 0.0)));
     return new HitableList(std::move(list), index);
 }
@@ -81,7 +91,6 @@ int main() {
     std::size_t cores = std::thread::hardware_concurrency();
     volatile std::atomic<std::size_t> count(0);
     std::vector<std::future<void>> futures;
-
     while (--cores) {
         futures.emplace_back(
                 std::async([=, &count, &world, &buffer]() {

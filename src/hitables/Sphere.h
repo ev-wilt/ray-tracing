@@ -11,8 +11,8 @@ class Sphere : public Hitable {
 public:
     Sphere() {}
     Sphere(Vector3 c, float r, Material *m) : center(c), radius(r), material(m) {};
-    virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
-    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const;
+    bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const override;
+    bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const override;
 
     Vector3 center;
     float radius;

@@ -13,8 +13,8 @@ public:
     MovingSphere(Vector3 cStart, Vector3 cEnd, float tStart, float tEnd, float r, Material *m) :
         centerStart(cStart), centerEnd(cEnd), timeStart(tStart), timeEnd(tEnd), radius(r), material(m) {};
 
-    virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const;
-    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const;
+    bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const override;
+    bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const override;
     Vector3 center(float time) const;
     Vector3 centerStart, centerEnd;
     float timeStart, timeEnd;
