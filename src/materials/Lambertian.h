@@ -10,7 +10,6 @@
 
 class Lambertian : public Material {
 public:
-    Lambertian(Texture *alb) : albedo(alb) {}
     Lambertian(std::unique_ptr<Texture> alb) : albedo(std::move(alb)) {}
 
     bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const override {

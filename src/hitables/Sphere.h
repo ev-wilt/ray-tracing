@@ -10,7 +10,7 @@
 class Sphere : public Hitable {
 public:
     Sphere() {}
-    Sphere(Vector3 c, float r, Material *m) : center(c), radius(r), material(m) {};
+    Sphere(Vector3 c, float r, std::shared_ptr<Material> m) : center(c), radius(r), material(std::move(m)) {};
     bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const override;
     bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const override;
 

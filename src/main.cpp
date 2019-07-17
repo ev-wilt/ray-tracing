@@ -42,15 +42,16 @@ Vector3 color(const Ray& ray, Hitable *world, int depth) {
 }
 
 // Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
-Hitable *randomScene() {
+std::unique_ptr<Hitable> randomScene() {
     int size = 50000;
     int index = 0;
     std::vector<std::unique_ptr<Hitable>> list(size + 1);
-    auto checkerTex = std::unique_ptr<Texture>(new CheckerTexture(
-            new ConstantTexture(Vector3(0.2, 0.3, 0.1)),
-            new ConstantTexture(Vector3 (0.9, 0.9, 0.9))));
+    auto firstTex = std::make_unique<ConstantTexture>(Vector3(0.2, 0.3, 0.1));
+    auto secondTex = std::make_unique<ConstantTexture>(Vector3 (0.9, 0.9, 0.9));
+    auto checkerTex = std::make_unique<CheckerTexture>(std::move(firstTex), std::move(secondTex));
+    auto checkerMat = std::make_unique<Lambertian>(std::move(checkerTex));
 
-    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(std::move(checkerTex))));
+    list[index++] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, std::move(checkerMat));
     for (int i = -10; i < 10; ++i) {
         for (int j = -10; j < 10; ++j) {
             float materialProb = DIST(GEN);
@@ -59,35 +60,57 @@ Hitable *randomScene() {
                 if (materialProb < 0.8) {
                     Vector3 randomColor = Vector3(DIST(GEN) * DIST(GEN),DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN));
                     Vector3 centerEnd = center + Vector3(0, 0.5 * DIST(GEN), 0);
-                    list[index++] = std::unique_ptr<Hitable>(new MovingSphere(center, centerEnd, 0.0, 1.0, 0.2, new Lambertian(new ConstantTexture(randomColor))));
+                    auto randomTex = std::make_unique<ConstantTexture>(randomColor);
+                    auto lambertian = std::make_unique<Lambertian>(std::move(randomTex));
+                    list[index++] = std::make_unique<MovingSphere>(center, centerEnd, 0.0, 1.0, 0.2, std::move(lambertian));
                 }
                 else if (materialProb < 0.95) {
                     Vector3 randomColor = Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)));
-                    list[index++] = std::unique_ptr<Hitable>(new Sphere(center, 0.2, new Metal(randomColor, 0.0)));
+                    auto metal = std::make_unique<Metal>(randomColor, 0.0);
+                    list[index++] = std::make_unique<Sphere>(center, 0.2, std::move(metal));
                 }
                 else {
-                    list[index++] = std::unique_ptr<Hitable>(new Sphere(center, 0.2, new Dielectric(1.5)));
+                    auto dielectric = std::make_unique<Dielectric>(1.5);
+                    list[index++] = std::make_unique<Sphere>(center, 0.2, std::move(dielectric));
                 }
             }
         }
     }
 
-    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(0, 1, 0), 1.0, new Dielectric(1.5)));
-    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(-4, 1, 0), 1.0, new Lambertian(new ConstantTexture(Vector3(0.4, 0.2, 0.1)))));
-    list[index++] = std::unique_ptr<Hitable>(new Sphere(Vector3(4, 1, 0), 1.0, new Metal(Vector3(0.7, 0.6, 0.5), 0.0)));
-    return new HitableList(std::move(list), index);
+    auto dielectric = std::make_unique<Dielectric>(1.5);
+    auto lambTex = std::make_unique<ConstantTexture>(Vector3(0.4, 0.2, 0.1));
+    auto lambertian = std::make_unique<Lambertian>(std::move(lambTex));
+    auto metal = std::make_unique<Metal>(Vector3(0.7, 0.6, 0.5), 0.0);
+
+    list[index++] = std::make_unique<Sphere>(Vector3(0, 1, 0), 1.0, std::move(dielectric));
+    list[index++] = std::make_unique<Sphere>(Vector3(-4, 1, 0), 1.0, std::move(lambertian));
+    list[index++] = std::make_unique<Sphere>(Vector3(4, 1, 0), 1.0, std::move(metal));
+    return std::make_unique<HitableList>(HitableList(std::move(list), index));
+}
+
+std::unique_ptr<Hitable> twoSpheres() {
+    auto firstTex = std::make_unique<ConstantTexture>(Vector3(0.2, 0.3, 0.1));
+    auto secondTex = std::make_unique<ConstantTexture>(Vector3 (0.9, 0.9, 0.9));
+    auto checkerTex = std::make_unique<CheckerTexture>(std::move(firstTex), std::move(secondTex));
+    auto checkerMat = std::make_shared<Lambertian>(std::move(checkerTex));
+
+    int size = 50;
+    std::vector<std::unique_ptr<Hitable>> list(size + 1);
+    list[0] = std::make_unique<Sphere>(Vector3(0, -10, 0), 10, checkerMat);
+    list[1] = std::make_unique<Sphere>(Vector3(0, 10, 0), 10, checkerMat);
+    return std::make_unique<HitableList>(HitableList(std::move(list), 2));
 }
 
 int main() {
     int raysPerPixel = 100;
-    Hitable *world = randomScene();
+    std::unique_ptr<Hitable> world = twoSpheres();
     Vector3 camPos = Vector3(13,2,3);
     Vector3 camDir = Vector3(0,0,0);
     float focusDist = 10;
     Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist, 0.0, 1.0);
 
     const std::size_t max = WIDTH * HEIGHT * 3;
-    std::unique_ptr<unsigned char> buffer(new unsigned char[WIDTH * HEIGHT * 3]);
+    auto buffer = std::make_unique<unsigned char[]>(WIDTH * HEIGHT * 3);
     std::size_t cores = std::thread::hardware_concurrency();
     volatile std::atomic<std::size_t> count(0);
     std::vector<std::future<void>> futures;
@@ -107,15 +130,15 @@ int main() {
                             float u = float(x + DIST(GEN)) / float(WIDTH);
                             float v = float(y + DIST(GEN)) / float(HEIGHT);
                             Ray ray = cam.getRay(u, v);
-                            col += color(ray, world, 0);
+                            col += color(ray, world.get(), 0);
                         }
 
                         col /= float(raysPerPixel);
                         col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 
-                        buffer.get()[index * 3] = (unsigned char)(255.99 * col[0]);
-                        buffer.get()[index * 3 + 1] = (unsigned char)(255.99 * col[1]);
-                        buffer.get()[index * 3 + 2] = (unsigned char)(255.99 * col[2]);
+                        buffer[index * 3] = (unsigned char)(255.99 * col[0]);
+                        buffer[index * 3 + 1] = (unsigned char)(255.99 * col[1]);
+                        buffer[index * 3 + 2] = (unsigned char)(255.99 * col[2]);
                     }
                 })
         );

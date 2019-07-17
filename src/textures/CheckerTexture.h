@@ -11,7 +11,7 @@
 class CheckerTexture : public Texture {
 public:
     CheckerTexture() {}
-    CheckerTexture(Texture *even, Texture *odd) : evenTex(even), oddTex(odd) {}
+    CheckerTexture(std::unique_ptr<Texture> even, std::unique_ptr<Texture> odd) : evenTex(std::move(even)), oddTex(std::move(odd)) {}
 
     Vector3 value(float u, float v, const Vector3& p) const override {
         float sines = sin(10 * p.x()) * sin(10 * p.y()) * sin(10 * p.z());

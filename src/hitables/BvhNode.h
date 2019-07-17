@@ -85,8 +85,8 @@ BvhNode::BvhNode(std::vector<std::shared_ptr<Hitable>> list, int size, float tim
     }
     else {
         auto rightSub = std::vector<std::shared_ptr<Hitable>>(list.begin() + size / 2, list.end());
-        left = std::unique_ptr<Hitable>(new BvhNode(list, size / 2, timeStart, timeEnd));
-        right = std::unique_ptr<Hitable>(new BvhNode(rightSub, size - size / 2, timeStart, timeEnd));
+        left = std::make_unique<BvhNode>(list, size / 2, timeStart, timeEnd);
+        right = std::make_unique<BvhNode>(rightSub, size - size / 2, timeStart, timeEnd);
     }
     AxisAlignedBoundingBox leftBox, rightBox;
     if (!left->boundingBox(timeStart, timeEnd, leftBox) || !right->boundingBox(timeStart, timeEnd, rightBox)) {

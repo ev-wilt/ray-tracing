@@ -10,7 +10,7 @@
 // Initializing random variables
 static std::random_device randomDevice;
 static std::mt19937 GEN(randomDevice());
-static const std::uniform_real_distribution<> DIST(0.0, 1.0);
+static std::uniform_real_distribution<> DIST(0.0, 1.0);
 
 
 #endif //RAYTRACING_RANDOM_H
