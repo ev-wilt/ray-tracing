@@ -11,7 +11,7 @@
 
 class Material {
 public:
-    virtual bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const = 0;
+    virtual bool scatter(const Ray &rayIn, const HitRecord &record, Vector3 &attenuation, Ray &scattered) const = 0;
 };
 
 // Returns a randomized point within the unit sphere
@@ -25,13 +25,13 @@ Vector3 randomPointInUnitSphere() {
 }
 
 // Returns the vector that represents a reflection of vec
-Vector3 reflect(const Vector3& vec, const Vector3& unitVec) {
+Vector3 reflect(const Vector3& vec, const Vector3 &unitVec) {
     return vec - 2 * dotProduct(vec, unitVec) * unitVec;
 }
 
 // Returns whether a refraction occurs or not and, if it does, sets refracted to
 // the refraction of vec
-bool refract(const Vector3& vec, const Vector3& n, float niOverNt, Vector3& refracted) {
+bool refract(const Vector3& vec, const Vector3 &n, float niOverNt, Vector3 &refracted) {
     Vector3 unitVec = unitVector(vec);
     float dot = dotProduct(unitVec, n);
     float discriminant = 1.0 - pow(niOverNt, 2) * (1.0 - pow(dot, 2));

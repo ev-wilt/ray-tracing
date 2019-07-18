@@ -19,8 +19,8 @@ struct HitRecord {
 
 class Hitable {
 public:
-    virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const = 0;
-    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const = 0;
+    virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const = 0;
+    virtual bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox &boundingBox) const = 0;
 };
 
 #endif //RAYTRACING_HITABLE_H

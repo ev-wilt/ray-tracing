@@ -11,7 +11,7 @@
 class AxisAlignedBoundingBox {
 public:
     AxisAlignedBoundingBox() {}
-    AxisAlignedBoundingBox(const Vector3& mi, const Vector3& ma) : min(mi), max(ma) {}
+    AxisAlignedBoundingBox(const Vector3 &mi, const Vector3 &ma) : min(mi), max(ma) {}
 
     Vector3 getMin() const { return min; }
     Vector3 getMax() const { return max; }

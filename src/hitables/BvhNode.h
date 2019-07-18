@@ -56,8 +56,8 @@ public:
     BvhNode() {}
     BvhNode(std::vector<std::shared_ptr<Hitable>> list, int size, float timeStart, float timeEnd);
 
-    bool hit(const Ray& ray, float tMin, float tMax, HitRecord& record) const override;
-    bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox& boundingBox) const override;
+    bool hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const override;
+    bool boundingBox(float tStart, float tEnd, AxisAlignedBoundingBox &boundingBox) const override;
 
     std::shared_ptr<Hitable> left;
     std::shared_ptr<Hitable> right;

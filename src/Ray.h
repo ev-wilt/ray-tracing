@@ -10,7 +10,7 @@
 class Ray {
 public:
     Ray() {}
-    Ray(const Vector3& ori, const Vector3& dir, float time) : origin(ori), direction(dir), creationTime(time) {}
+    Ray(const Vector3 &ori, const Vector3 &dir, float time) : origin(ori), direction(dir), creationTime(time) {}
 
     Vector3 getOrigin() const { return origin; }
     Vector3 getDirection() const { return direction; }

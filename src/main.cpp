@@ -16,13 +16,14 @@
 #include "hitables/BvhNode.h"
 #include "textures/ConstantTexture.h"
 #include "textures/CheckerTexture.h"
+#include "textures/NoiseTexture.h"
 
 // Image size
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 
 // Returns the color that the given ray points to within the world
-Vector3 color(const Ray& ray, Hitable *world, int depth) {
+Vector3 color(const Ray &ray, Hitable *world, int depth) {
     HitRecord record;
     if (world->hit(ray, 0.001, std::numeric_limits<float>::max(), record)) {
         Ray scattered;
@@ -101,13 +102,23 @@ std::unique_ptr<Hitable> twoSpheres() {
     return std::make_unique<HitableList>(HitableList(std::move(list), 2));
 }
 
+std::unique_ptr<Hitable> twoPerlinSpheres() {
+    auto perlinTex = std::make_unique<NoiseTexture>();
+    auto perlinMat = std::make_shared<Lambertian>(std::move(perlinTex));
+    std::vector<std::unique_ptr<Hitable>> list(2);
+    list[0] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, perlinMat);
+    list[1] = std::make_unique<Sphere>(Vector3(0, 2, 0), 2, perlinMat);
+    return std::make_unique<HitableList>(std::move(list), 2);
+}
+
+
 int main() {
     int raysPerPixel = 100;
-    std::unique_ptr<Hitable> world = twoSpheres();
-    Vector3 camPos = Vector3(13,2,3);
-    Vector3 camDir = Vector3(0,0,0);
+    std::unique_ptr<Hitable> world = twoPerlinSpheres();
+    Vector3 camPos = Vector3(13, 2, 3);
+    Vector3 camDir = Vector3(0, 0, 0);
     float focusDist = 10;
-    Camera cam(camPos, camDir, Vector3(0,1,0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist, 0.0, 1.0);
+    Camera cam(camPos, camDir, Vector3(0, 1, 0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist, 0.0, 1.0);
 
     const std::size_t max = WIDTH * HEIGHT * 3;
     auto buffer = std::make_unique<unsigned char[]>(WIDTH * HEIGHT * 3);

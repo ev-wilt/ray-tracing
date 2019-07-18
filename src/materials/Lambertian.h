@@ -12,7 +12,7 @@ class Lambertian : public Material {
 public:
     Lambertian(std::unique_ptr<Texture> alb) : albedo(std::move(alb)) {}
 
-    bool scatter(const Ray& rayIn, const HitRecord& record, Vector3& attenuation, Ray& scattered) const override {
+    bool scatter(const Ray &rayIn, const HitRecord &record, Vector3 &attenuation, Ray &scattered) const override {
         Vector3 target = record.p + record.normal + randomPointInUnitSphere();
         scattered = Ray(record.p, target - record.p, rayIn.getTime());
         attenuation = albedo->value(0, 0, record.p);
