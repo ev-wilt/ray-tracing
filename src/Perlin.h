@@ -37,20 +37,43 @@ static std::vector<int> perlinGeneratePerm() {
     return p;
 }
 
+inline float trilinearInterpolation(float c[2][2][2], float u, float v, float w) {
+    float accumulator = 0;
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            for (int k = 0; k < 2; ++k) {
+                accumulator += (i * u + (1 - i) * (1 - u)) *
+                               (j * v + (1 - j) * (1 - v)) *
+                               (k * w + (1 - k) * (1 - w)) *
+                               c[i][j][k];
+            }
+        }
+    }
+    return accumulator;
+}
+
 class Perlin {
 public:
     Perlin() : randFloat(perlinGenerate()), permX(perlinGeneratePerm()),
     permY(perlinGeneratePerm()), permZ(perlinGeneratePerm()) {}
 
     float noise(const Vector3 &p) const {
-        float u = p.x() - floor(p.x());
-        float v = p.y() - floor(p.y());
-        float w = p.z() - floor(p.z());
-        int i = int(4 * p.x()) & 255;
-        int j = int(4 * p.y()) & 255;
-        int k = int(4 * p.z()) & 255;
+        int i = floor(p.x());
+        int j = floor(p.y());
+        int k = floor(p.z());
+        float u = p.x() - i;
+        float v = p.y() - j;
+        float w = p.z() - k;
+        float c[2][2][2];
 
-        return randFloat[permX[i] ^ permY[j] ^ permZ[k]];
+        for (int dI = 0; dI < 2; ++dI) {
+            for (int dJ = 0; dJ < 2; ++dJ) {
+                for (int dK = 0; dK < 2; ++dK) {
+                    c[dI][dJ][dK] = randFloat[permX[(i + dI) & 255] ^ permY[(j + dJ) & 255] ^ permZ[(k + dK) & 255]];
+                }
+            }
+        }
+        return trilinearInterpolation(c, pow(u, 2) * (3 - 2 * u), pow(v, 2) * (3 - 2 * v), pow(w, 2) * (3 - 2 * w));
     }
 
     std::vector<float> randFloat;
