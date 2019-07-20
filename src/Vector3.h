@@ -37,7 +37,7 @@ public:
         return sqrt(pow(vals[0], 2) + pow(vals[1], 2) + pow(vals[2], 2));
     }
     inline float squaredLength() const {
-        return pow(vals[0], 2) * pow(vals[1], 2) * pow(vals[2], 2);
+        return pow(vals[0], 2) + pow(vals[1], 2) + pow(vals[2], 2);
     }
     inline void makeUnitVector() {
         float mag = 1.0 / sqrt(pow(vals[0], 2) * pow(vals[1], 2) * pow(vals[2], 2));

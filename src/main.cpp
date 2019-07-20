@@ -55,18 +55,18 @@ std::unique_ptr<Hitable> randomScene() {
     list[index++] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, std::move(checkerMat));
     for (int i = -10; i < 10; ++i) {
         for (int j = -10; j < 10; ++j) {
-            float materialProb = DIST(GEN);
-            Vector3 center(i + 0.9 * DIST(GEN), 0.2, j + 0.9 * DIST(GEN));
+            float materialProb = randomReal();
+            Vector3 center(i + 0.9 * randomReal(), 0.2, j + 0.9 * randomReal());
             if ((center - Vector3(4, 0.2, 0)).length() > 0.9) {
                 if (materialProb < 0.8) {
-                    Vector3 randomColor = Vector3(DIST(GEN) * DIST(GEN),DIST(GEN) * DIST(GEN), DIST(GEN) * DIST(GEN));
-                    Vector3 centerEnd = center + Vector3(0, 0.5 * DIST(GEN), 0);
+                    Vector3 randomColor = Vector3(randomReal() * randomReal(),randomReal() * randomReal(), randomReal() * randomReal());
+                    Vector3 centerEnd = center + Vector3(0, 0.5 * randomReal(), 0);
                     auto randomTex = std::make_unique<ConstantTexture>(randomColor);
                     auto lambertian = std::make_unique<Lambertian>(std::move(randomTex));
                     list[index++] = std::make_unique<MovingSphere>(center, centerEnd, 0.0, 1.0, 0.2, std::move(lambertian));
                 }
                 else if (materialProb < 0.95) {
-                    Vector3 randomColor = Vector3(0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)), 0.5 * (1 + DIST(GEN)));
+                    Vector3 randomColor = Vector3(0.5 * (1 + randomReal()), 0.5 * (1 + randomReal()), 0.5 * (1 + randomReal()));
                     auto metal = std::make_unique<Metal>(randomColor, 0.0);
                     list[index++] = std::make_unique<Sphere>(center, 0.2, std::move(metal));
                 }
@@ -138,8 +138,8 @@ int main() {
                         // to find the avg color
                         Vector3 col(0.0, 0.0, 0.0);
                         for (int s = 0; s < raysPerPixel; ++s) {
-                            float u = float(x + DIST(GEN)) / float(WIDTH);
-                            float v = float(y + DIST(GEN)) / float(HEIGHT);
+                            float u = float(x + randomReal()) / float(WIDTH);
+                            float v = float(y + randomReal()) / float(HEIGHT);
                             Ray ray = cam.getRay(u, v);
                             col += color(ray, world.get(), 0);
                         }

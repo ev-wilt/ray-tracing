@@ -14,7 +14,7 @@
 Vector3 randomPointInUnitDisk() {
     Vector3 p;
     do {
-        p = 2.0 * Vector3(DIST(GEN), DIST(GEN), 0.0) - Vector3(1.0, 1.0, 0.0);
+        p = 2.0 * Vector3(randomReal(), randomReal(), 0.0) - Vector3(1.0, 1.0, 0.0);
     } while (dotProduct(p,p) >= 1.0);
     return p;
 }
@@ -41,7 +41,7 @@ public:
     Ray getRay(float s, float t) const {
         Vector3 point = lensRadius * randomPointInUnitDisk();
         Vector3 offset = u * point.x() + v * point.y();
-        float creationTime = timeStart + DIST(GEN) * (timeEnd - timeStart);
+        float creationTime = timeStart + randomReal() * (timeEnd - timeStart);
         return {origin + offset, lowerLeft + s * horizontal + t * vertical - origin - offset, creationTime};
     }
 

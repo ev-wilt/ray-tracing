@@ -8,9 +8,12 @@
 #include <random>
 
 // Initializing random variables
-static std::random_device randomDevice;
-static std::mt19937 GEN(randomDevice());
-static std::uniform_real_distribution<> DIST(0.0, 1.0);
+std::random_device randomDevice;
+std::mt19937 GEN(randomDevice());
+std::uniform_real_distribution<> DIST(0.0, 1.0);
 
+float randomReal() {
+    return DIST(GEN);
+}
 
 #endif //RAYTRACING_RANDOM_H

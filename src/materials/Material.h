@@ -19,7 +19,7 @@ Vector3 randomPointInUnitSphere() {
     Vector3 point;
 
     while (point.squaredLength() >= 1.0) {
-        point = 2.0 * Vector3(DIST(GEN), DIST(GEN), DIST(GEN)) - Vector3(1.0, 1.0, 1.0);
+        point = 2.0 * Vector3(randomReal(), randomReal(), randomReal()) - Vector3(1.0, 1.0, 1.0);
     }
     return point;
 }

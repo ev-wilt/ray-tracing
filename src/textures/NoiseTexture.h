@@ -14,7 +14,7 @@ public:
     NoiseTexture(float s) : scale(s) {}
 
     Vector3 value(float u, float v, const Vector3 &p) const override {
-        return Vector3(1, 1, 1) * noise.noise(scale * p);
+        return Vector3(1, 1, 1) * 0.5 * (1 + sin(scale * p.z() + 10 * noise.turbulence(p)));
     }
 
     Perlin noise;

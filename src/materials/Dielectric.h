@@ -39,7 +39,7 @@ public:
         else {
             reflectProbability = 1.0;
         }
-        if (DIST(GEN) < reflectProbability) {
+        if (randomReal() < reflectProbability) {
             scattered = Ray(record.p, reflected, rayIn.getTime());
         }
         else {

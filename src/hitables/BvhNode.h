@@ -65,7 +65,7 @@ public:
 };
 
 BvhNode::BvhNode(std::vector<std::shared_ptr<Hitable>> list, int size, float timeStart, float timeEnd) {
-    int axis = int(DIST(GEN) * 3);
+    int axis = int(randomReal() * 3);
 
     if (axis == 0) {
         std::partial_sort(list.begin(), list.begin() + size, list.end(), boxXCompare);
