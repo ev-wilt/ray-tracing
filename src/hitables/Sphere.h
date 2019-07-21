@@ -5,7 +5,19 @@
 #ifndef RAYTRACING_SPHERE_H
 #define RAYTRACING_SPHERE_H
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "Hitable.h"
+
+// Sets u and v to the coordinates that vector p points to
+void getSphereUV(const Vector3 &p, float &u, float &v) {
+    float phi = atan2(p.z(), p.x());
+    float theta = asin(p.y());
+
+    u = 1 - (phi + M_PI) / (2 * M_PI);
+    v = (theta + M_PI / 2) / M_PI;
+}
 
 class Sphere : public Hitable {
 public:
@@ -32,6 +44,7 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) cons
         if (t < tMax && t > tMin) {
             record.t = t;
             record.p = ray.pointAtParameter(record.t);
+            getSphereUV((record.p - center) / radius, record.u, record.v);
             record.normal = (record.p - center) / radius;
             record.material = material;
             return true;
@@ -40,6 +53,7 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) cons
         if (t < tMax && t > tMin) {
             record.t = t;
             record.p = ray.pointAtParameter(record.t);
+            getSphereUV((record.p - center) / radius, record.u, record.v);
             record.normal = (record.p - center) / radius;
             record.material = material;
             return true;

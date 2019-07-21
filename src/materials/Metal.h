@@ -9,16 +9,16 @@
 
 class Metal : public Material {
 public:
-    Metal(const Vector3& alb, float fuzz) : albedo(alb), fuzziness(fuzz) {}
+    Metal(std::unique_ptr<Texture> alb, float fuzz) : albedo(std::move(alb)), fuzziness(fuzz) {}
 
     bool scatter(const Ray &rayIn, const HitRecord &record, Vector3 &attenuation, Ray &scattered) const override {
         Vector3 reflected = reflect(unitVector(rayIn.getDirection()), record.normal);
         scattered = Ray(record.p, reflected + fuzziness * randomPointInUnitSphere(), rayIn.getTime());
-        attenuation = albedo;
+        attenuation = albedo->value(record.u, record.v, record.p);
         return (dotProduct(scattered.getDirection(), record.normal) > 0);
     }
 
-    Vector3 albedo;
+    std::unique_ptr<Texture> albedo;
     float fuzziness;
 };
 

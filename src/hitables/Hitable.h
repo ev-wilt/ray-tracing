@@ -12,6 +12,8 @@ class Material;
 
 struct HitRecord {
     float t;
+    float u;
+    float v;
     Vector3 p;
     Vector3 normal;
     std::shared_ptr<Material> material;

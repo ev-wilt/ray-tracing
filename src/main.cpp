@@ -5,18 +5,10 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../lib/stb_image_write.h"
-#include "hitables/HitableList.h"
-#include "hitables/Sphere.h"
+
 #include "Camera.h"
-#include "Random.h"
-#include "materials/Lambertian.h"
-#include "materials/Metal.h"
-#include "materials/Dielectric.h"
-#include "hitables/MovingSphere.h"
-#include "hitables/BvhNode.h"
-#include "textures/ConstantTexture.h"
-#include "textures/CheckerTexture.h"
-#include "textures/NoiseTexture.h"
+#include "materials/Material.h"
+#include "Scenes.h"
 
 // Image size
 const int WIDTH = 1280;
@@ -42,79 +34,9 @@ Vector3 color(const Ray &ray, Hitable *world, int depth) {
     }
 }
 
-// Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
-std::unique_ptr<Hitable> randomScene() {
-    int size = 50000;
-    int index = 0;
-    std::vector<std::unique_ptr<Hitable>> list(size + 1);
-    auto firstTex = std::make_unique<ConstantTexture>(Vector3(0.2, 0.3, 0.1));
-    auto secondTex = std::make_unique<ConstantTexture>(Vector3 (0.9, 0.9, 0.9));
-    auto checkerTex = std::make_unique<CheckerTexture>(std::move(firstTex), std::move(secondTex));
-    auto checkerMat = std::make_unique<Lambertian>(std::move(checkerTex));
-
-    list[index++] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, std::move(checkerMat));
-    for (int i = -10; i < 10; ++i) {
-        for (int j = -10; j < 10; ++j) {
-            float materialProb = randomReal();
-            Vector3 center(i + 0.9 * randomReal(), 0.2, j + 0.9 * randomReal());
-            if ((center - Vector3(4, 0.2, 0)).length() > 0.9) {
-                if (materialProb < 0.8) {
-                    Vector3 randomColor = Vector3(randomReal() * randomReal(),randomReal() * randomReal(), randomReal() * randomReal());
-                    Vector3 centerEnd = center + Vector3(0, 0.5 * randomReal(), 0);
-                    auto randomTex = std::make_unique<ConstantTexture>(randomColor);
-                    auto lambertian = std::make_unique<Lambertian>(std::move(randomTex));
-                    list[index++] = std::make_unique<MovingSphere>(center, centerEnd, 0.0, 1.0, 0.2, std::move(lambertian));
-                }
-                else if (materialProb < 0.95) {
-                    Vector3 randomColor = Vector3(0.5 * (1 + randomReal()), 0.5 * (1 + randomReal()), 0.5 * (1 + randomReal()));
-                    auto metal = std::make_unique<Metal>(randomColor, 0.0);
-                    list[index++] = std::make_unique<Sphere>(center, 0.2, std::move(metal));
-                }
-                else {
-                    auto dielectric = std::make_unique<Dielectric>(1.5);
-                    list[index++] = std::make_unique<Sphere>(center, 0.2, std::move(dielectric));
-                }
-            }
-        }
-    }
-
-    auto dielectric = std::make_unique<Dielectric>(1.5);
-    auto lambTex = std::make_unique<ConstantTexture>(Vector3(0.4, 0.2, 0.1));
-    auto lambertian = std::make_unique<Lambertian>(std::move(lambTex));
-    auto metal = std::make_unique<Metal>(Vector3(0.7, 0.6, 0.5), 0.0);
-
-    list[index++] = std::make_unique<Sphere>(Vector3(0, 1, 0), 1.0, std::move(dielectric));
-    list[index++] = std::make_unique<Sphere>(Vector3(-4, 1, 0), 1.0, std::move(lambertian));
-    list[index++] = std::make_unique<Sphere>(Vector3(4, 1, 0), 1.0, std::move(metal));
-    return std::make_unique<HitableList>(HitableList(std::move(list), index));
-}
-
-std::unique_ptr<Hitable> twoSpheres() {
-    auto firstTex = std::make_unique<ConstantTexture>(Vector3(0.2, 0.3, 0.1));
-    auto secondTex = std::make_unique<ConstantTexture>(Vector3 (0.9, 0.9, 0.9));
-    auto checkerTex = std::make_unique<CheckerTexture>(std::move(firstTex), std::move(secondTex));
-    auto checkerMat = std::make_shared<Lambertian>(std::move(checkerTex));
-
-    int size = 50;
-    std::vector<std::unique_ptr<Hitable>> list(size + 1);
-    list[0] = std::make_unique<Sphere>(Vector3(0, -10, 0), 10, checkerMat);
-    list[1] = std::make_unique<Sphere>(Vector3(0, 10, 0), 10, checkerMat);
-    return std::make_unique<HitableList>(HitableList(std::move(list), 2));
-}
-
-std::unique_ptr<Hitable> twoPerlinSpheres() {
-    auto perlinTex = std::make_unique<NoiseTexture>();
-    auto perlinMat = std::make_shared<Lambertian>(std::move(perlinTex));
-    std::vector<std::unique_ptr<Hitable>> list(2);
-    list[0] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, perlinMat);
-    list[1] = std::make_unique<Sphere>(Vector3(0, 2, 0), 2, perlinMat);
-    return std::make_unique<HitableList>(std::move(list), 2);
-}
-
-
 int main() {
     int raysPerPixel = 100;
-    std::unique_ptr<Hitable> world = twoPerlinSpheres();
+    std::unique_ptr<Hitable> world = texturedSphere();
     Vector3 camPos = Vector3(13, 2, 3);
     Vector3 camDir = Vector3(0, 0, 0);
     float focusDist = 10;
