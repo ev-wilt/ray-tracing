@@ -20,24 +20,23 @@ Vector3 color(const Ray &ray, Hitable *world, int depth) {
     if (world->hit(ray, 0.001, std::numeric_limits<float>::max(), record)) {
         Ray scattered;
         Vector3 attenuation;
+        Vector3 emitted = record.material->emitted(record.u, record.v, record.p);
         if (depth < 50 && record.material->scatter(ray, record, attenuation, scattered)) {
-            return attenuation * color(scattered, world, depth + 1);
+            return emitted + attenuation * color(scattered, world, depth + 1);
         }
         else {
-            return Vector3(0.0, 0.0, 0.0);
+            return emitted;
         }
     }
     else {
-        Vector3 unitDirection = unitVector(ray.getDirection());
-        float t = 0.5 * (unitDirection.y() + 1.0);
-        return (1.0 - t) * Vector3(1.0, 1.0, 1.0) + t * Vector3(0.5, 0.7, 1.0);
+        return Vector3(0, 0, 0);
     }
 }
 
 int main() {
     int raysPerPixel = 100;
-    std::unique_ptr<Hitable> world = texturedSphere();
-    Vector3 camPos = Vector3(13, 2, 3);
+    std::unique_ptr<Hitable> world = simpleLight();
+    Vector3 camPos = Vector3(18, 2, 3);
     Vector3 camDir = Vector3(0, 0, 0);
     float focusDist = 10;
     Camera cam(camPos, camDir, Vector3(0, 1, 0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist, 0.0, 1.0);

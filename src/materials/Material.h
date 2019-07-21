@@ -12,6 +12,9 @@
 class Material {
 public:
     virtual bool scatter(const Ray &rayIn, const HitRecord &record, Vector3 &attenuation, Ray &scattered) const = 0;
+    virtual Vector3 emitted(float u, float v, const Vector3 &p) const {
+        return Vector3(0, 0, 0);
+    }
 };
 
 // Returns a randomized point within the unit sphere

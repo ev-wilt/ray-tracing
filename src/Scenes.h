@@ -24,6 +24,8 @@
 #include "textures/CheckerTexture.h"
 #include "textures/NoiseTexture.h"
 #include "textures/ImageTexture.h"
+#include "materials/DiffuseLight.h"
+#include "hitables/TwoDRectangle.h"
 
 // Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
 std::unique_ptr<Hitable> randomScene() {
@@ -109,6 +111,20 @@ std::unique_ptr<Hitable> texturedSphere() {
     std::vector<std::unique_ptr<Hitable>> list(1);
     list[0] = std::make_unique<Sphere>(Vector3(4, 1, 0), 1.0, imageMat);
     return std::make_unique<HitableList>(HitableList(std::move(list), 1));
+}
+
+std::unique_ptr<Hitable> simpleLight() {
+    auto noiseTex = std::make_unique<NoiseTexture>(4);
+    auto noiseMat = std::make_shared<Lambertian>(std::move(noiseTex));
+    auto lightTex = std::make_unique<ConstantTexture>(Vector3(4, 4, 4));
+    auto lightMat = std::make_shared<DiffuseLight>(std::move(lightTex));
+    std::vector<std::unique_ptr<Hitable>> list(4);
+
+    list[0] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, noiseMat);
+    list[1] = std::make_unique<Sphere>(Vector3(0, 2, 0), 2, noiseMat);
+    list[2] = std::make_unique<Sphere>(Vector3(0, 7, 0), 2, lightMat);
+    list[3] = std::make_unique<TwoDRectangle>(3, 5, 1, 3, -2, lightMat);
+    return std::make_unique<HitableList>(HitableList(std::move(list), 4));
 }
 
 
