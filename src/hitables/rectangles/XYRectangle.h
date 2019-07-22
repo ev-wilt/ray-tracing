@@ -2,16 +2,17 @@
 // Created by Evan on 7/21/2019.
 //
 
-#ifndef RAYTRACING_TWODRECTANGLE_H
-#define RAYTRACING_TWODRECTANGLE_H
+#ifndef RAYTRACING_XYRECTANGLE_H
+#define RAYTRACING_XYRECTANGLE_H
 
 #include <memory>
-#include "Hitable.h"
 
-class TwoDRectangle : public Hitable {
+#include "../Hitable.h"
+
+class XYRectangle : public Hitable {
 public:
-    TwoDRectangle() {}
-    TwoDRectangle(float x0, float x1, float y0, float y1, float k, std::shared_ptr<Material> mat) :
+    XYRectangle() {}
+    XYRectangle(float x0, float x1, float y0, float y1, float k, std::shared_ptr<Material> mat) :
     xMin(x0), xMax(x1), yMin(y0), yMax(y1), z(k), material(std::move(mat)) {}
 
     bool hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const override;
@@ -25,7 +26,7 @@ public:
 };
 
 
-bool TwoDRectangle::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const {
+bool XYRectangle::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const {
     float t = (z - ray.getOrigin().z()) / ray.getDirection().z();
     if (t < tMin || t > tMax) return false;
 
@@ -42,4 +43,4 @@ bool TwoDRectangle::hit(const Ray &ray, float tMin, float tMax, HitRecord &recor
     return true;
 }
 
-#endif //RAYTRACING_TWODRECTANGLE_H
+#endif //RAYTRACING_XYRECTANGLE_H

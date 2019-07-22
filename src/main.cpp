@@ -11,8 +11,8 @@
 #include "Scenes.h"
 
 // Image size
-const int WIDTH = 1280;
-const int HEIGHT = 720;
+const int WIDTH = 640;
+const int HEIGHT = 480;
 
 // Returns the color that the given ray points to within the world
 Vector3 color(const Ray &ray, Hitable *world, int depth) {
@@ -34,12 +34,12 @@ Vector3 color(const Ray &ray, Hitable *world, int depth) {
 }
 
 int main() {
-    int raysPerPixel = 100;
-    std::unique_ptr<Hitable> world = simpleLight();
-    Vector3 camPos = Vector3(18, 2, 3);
-    Vector3 camDir = Vector3(0, 0, 0);
+    int raysPerPixel = 200;
+    std::unique_ptr<Hitable> world = cornellBox();
+    Vector3 camPos = Vector3(278, 278, -800);
+    Vector3 camDir = Vector3(278, 278, 0);
     float focusDist = 10;
-    Camera cam(camPos, camDir, Vector3(0, 1, 0), 20, float(WIDTH) / float(HEIGHT), 0.1, focusDist, 0.0, 1.0);
+    Camera cam(camPos, camDir, Vector3(0, 1, 0), 40, float(WIDTH) / float(HEIGHT), 0.0, focusDist, 0.0, 1.0);
 
     const std::size_t max = WIDTH * HEIGHT * 3;
     auto buffer = std::make_unique<unsigned char[]>(WIDTH * HEIGHT * 3);

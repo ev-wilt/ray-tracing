@@ -5,7 +5,7 @@
 #ifndef RAYTRACING_MOVINGSPHERE_H
 #define RAYTRACING_MOVINGSPHERE_H
 
-#include "Hitable.h"
+#include "../Hitable.h"
 
 class MovingSphere : public Hitable {
 public:

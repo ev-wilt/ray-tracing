@@ -8,7 +8,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "Hitable.h"
+#include "../Hitable.h"
 
 // Sets u and v to the coordinates that vector p points to
 void getSphereUV(const Vector3 &p, float &u, float &v) {

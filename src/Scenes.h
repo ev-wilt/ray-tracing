@@ -14,18 +14,21 @@
 #include "../lib/stb_image.h"
 
 #include "hitables/HitableList.h"
-#include "hitables/Sphere.h"
+#include "hitables/spheres/Sphere.h"
 #include "Random.h"
 #include "materials/Lambertian.h"
 #include "materials/Metal.h"
 #include "materials/Dielectric.h"
-#include "hitables/MovingSphere.h"
+#include "hitables/spheres/MovingSphere.h"
 #include "textures/ConstantTexture.h"
 #include "textures/CheckerTexture.h"
 #include "textures/NoiseTexture.h"
 #include "textures/ImageTexture.h"
 #include "materials/DiffuseLight.h"
-#include "hitables/TwoDRectangle.h"
+#include "hitables/rectangles/XYRectangle.h"
+#include "hitables/rectangles/YZRectangle.h"
+#include "hitables/rectangles/XZRectangle.h"
+#include "hitables/FlippedNormals.h"
 
 // Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
 std::unique_ptr<Hitable> randomScene() {
@@ -123,8 +126,32 @@ std::unique_ptr<Hitable> simpleLight() {
     list[0] = std::make_unique<Sphere>(Vector3(0, -1000, 0), 1000, noiseMat);
     list[1] = std::make_unique<Sphere>(Vector3(0, 2, 0), 2, noiseMat);
     list[2] = std::make_unique<Sphere>(Vector3(0, 7, 0), 2, lightMat);
-    list[3] = std::make_unique<TwoDRectangle>(3, 5, 1, 3, -2, lightMat);
+    list[3] = std::make_unique<XYRectangle>(3, 5, 1, 3, -2, lightMat);
     return std::make_unique<HitableList>(HitableList(std::move(list), 4));
+}
+
+std::unique_ptr<Hitable> cornellBox() {
+    auto redTex = std::make_unique<ConstantTexture>(Vector3(0.65, 0.05, 0.05));
+    auto redMat = std::make_shared<Lambertian>(std::move(redTex));
+
+    auto whiteTex = std::make_unique<ConstantTexture>(Vector3(0.73, 0.73, 0.73));
+    auto whiteMat = std::make_shared<Lambertian>(std::move(whiteTex));
+
+    auto greenTex = std::make_unique<ConstantTexture>(Vector3(0.12, 0.45, 0.15));
+    auto greenMat = std::make_shared<Lambertian>(std::move(greenTex));
+
+    auto lightTex = std::make_unique<ConstantTexture>(Vector3(15, 15, 15));
+    auto lightMat = std::make_shared<DiffuseLight>(std::move(lightTex));
+    std::vector<std::unique_ptr<Hitable>> list(6);
+
+    list[0] = std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(0, 555, 0, 555, 555, greenMat));
+    list[1] = std::make_unique<YZRectangle>(0, 555, 0, 555, 0, redMat);
+    list[2] = std::make_unique<XZRectangle>(213, 343, 227, 332, 554, lightMat);
+    list[3] = std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(0, 555, 0, 555, 555, whiteMat));
+    list[4] = std::make_unique<XZRectangle>(0, 555, 0, 555, 0, whiteMat);
+    list[5] = std::make_unique<FlippedNormals>(std::make_unique<XYRectangle>(0, 555, 0, 555, 555, whiteMat));
+
+    return std::make_unique<HitableList>(HitableList(std::move(list), 6));
 }
 
 
