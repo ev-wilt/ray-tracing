@@ -25,10 +25,11 @@
 #include "textures/NoiseTexture.h"
 #include "textures/ImageTexture.h"
 #include "materials/DiffuseLight.h"
-#include "hitables/rectangles/XYRectangle.h"
-#include "hitables/rectangles/YZRectangle.h"
-#include "hitables/rectangles/XZRectangle.h"
+#include "hitables/2Drectangles/XYRectangle.h"
+#include "hitables/2Drectangles/YZRectangle.h"
+#include "hitables/2Drectangles/XZRectangle.h"
 #include "hitables/FlippedNormals.h"
+#include "hitables/Box.h"
 
 // Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
 std::unique_ptr<Hitable> randomScene() {
@@ -142,7 +143,7 @@ std::unique_ptr<Hitable> cornellBox() {
 
     auto lightTex = std::make_unique<ConstantTexture>(Vector3(15, 15, 15));
     auto lightMat = std::make_shared<DiffuseLight>(std::move(lightTex));
-    std::vector<std::unique_ptr<Hitable>> list(6);
+    std::vector<std::unique_ptr<Hitable>> list(8);
 
     list[0] = std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(0, 555, 0, 555, 555, greenMat));
     list[1] = std::make_unique<YZRectangle>(0, 555, 0, 555, 0, redMat);
@@ -150,8 +151,10 @@ std::unique_ptr<Hitable> cornellBox() {
     list[3] = std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(0, 555, 0, 555, 555, whiteMat));
     list[4] = std::make_unique<XZRectangle>(0, 555, 0, 555, 0, whiteMat);
     list[5] = std::make_unique<FlippedNormals>(std::make_unique<XYRectangle>(0, 555, 0, 555, 555, whiteMat));
+    list[6] = std::make_unique<Box>(Vector3(130, 0, 65), Vector3(295, 165, 230), whiteMat);
+    list[7] = std::make_unique<Box>(Vector3(265, 0, 295), Vector3(430, 330, 460), whiteMat);
 
-    return std::make_unique<HitableList>(HitableList(std::move(list), 6));
+    return std::make_unique<HitableList>(HitableList(std::move(list), 8));
 }
 
 
