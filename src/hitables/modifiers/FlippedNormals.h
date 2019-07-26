@@ -6,7 +6,8 @@
 #define RAYTRACING_FLIPPEDNORMALS_H
 
 #include <memory>
-#include "Hitable.h"
+
+#include "../Hitable.h"
 
 class FlippedNormals : public Hitable {
 public:

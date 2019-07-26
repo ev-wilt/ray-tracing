@@ -28,8 +28,10 @@
 #include "hitables/2Drectangles/XYRectangle.h"
 #include "hitables/2Drectangles/YZRectangle.h"
 #include "hitables/2Drectangles/XZRectangle.h"
-#include "hitables/FlippedNormals.h"
+#include "hitables/modifiers/FlippedNormals.h"
 #include "hitables/Box.h"
+#include "hitables/modifiers/Translate.h"
+#include "hitables/modifiers/RotateY.h"
 
 // Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
 std::unique_ptr<Hitable> randomScene() {
@@ -151,8 +153,8 @@ std::unique_ptr<Hitable> cornellBox() {
     list[3] = std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(0, 555, 0, 555, 555, whiteMat));
     list[4] = std::make_unique<XZRectangle>(0, 555, 0, 555, 0, whiteMat);
     list[5] = std::make_unique<FlippedNormals>(std::make_unique<XYRectangle>(0, 555, 0, 555, 555, whiteMat));
-    list[6] = std::make_unique<Box>(Vector3(130, 0, 65), Vector3(295, 165, 230), whiteMat);
-    list[7] = std::make_unique<Box>(Vector3(265, 0, 295), Vector3(430, 330, 460), whiteMat);
+    list[6] = std::make_unique<Translate>(std::make_unique<RotateY>(std::make_unique<Box>(Vector3(0, 0, 0), Vector3(165, 165, 165), whiteMat), -18), Vector3(130, 0, 65));
+    list[7] = std::make_unique<Translate>(std::make_unique<RotateY>(std::make_unique<Box>(Vector3(0, 0, 0), Vector3(165, 330, 165), whiteMat), 15), Vector3(265, 0, 295));
 
     return std::make_unique<HitableList>(HitableList(std::move(list), 8));
 }

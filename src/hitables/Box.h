@@ -10,7 +10,7 @@
 #include "Hitable.h"
 #include "2Drectangles/XYRectangle.h"
 #include "HitableList.h"
-#include "FlippedNormals.h"
+#include "modifiers/FlippedNormals.h"
 #include "2Drectangles/XZRectangle.h"
 #include "2Drectangles/YZRectangle.h"
 
