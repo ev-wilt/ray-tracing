@@ -18,14 +18,14 @@ class Box : public Hitable {
 public:
     Box() {}
     Box(const Vector3 &p0, const Vector3 &p1, std::shared_ptr<Material> r) : pMin(p0), pMax(p1) {
-        std::vector<std::unique_ptr<Hitable>> list;
+        std::vector<std::unique_ptr<Hitable>> list(6);
 
-        list.push_back(std::make_unique<XYRectangle>(pMin.x(), pMax.x(), pMin.y(), pMax.y(), pMax.z(), r));
-        list.push_back(std::make_unique<FlippedNormals>(std::make_unique<XYRectangle>(pMin.x(), pMax.x(), pMin.y(), pMax.y(), pMin.z(), r)));
-        list.push_back(std::make_unique<XZRectangle>(pMin.x(), pMax.x(), pMin.z(), pMax.z(), pMax.y(), r));
-        list.push_back(std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(pMin.x(), pMax.x(), pMin.z(), pMax.z(), pMin.y(), r)));
-        list.push_back(std::make_unique<YZRectangle>(pMin.y(), pMax.y(), pMin.z(), pMax.z(), pMax.x(), r));
-        list.push_back(std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(pMin.y(), pMax.y(), pMin.z(), pMax.z(), pMin.x(), r)));
+        list[0] = std::make_unique<XYRectangle>(pMin.x(), pMax.x(), pMin.y(), pMax.y(), pMax.z(), r);
+        list[1] = std::make_unique<FlippedNormals>(std::make_unique<XYRectangle>(pMin.x(), pMax.x(), pMin.y(), pMax.y(), pMin.z(), r));
+        list[2] = std::make_unique<XZRectangle>(pMin.x(), pMax.x(), pMin.z(), pMax.z(), pMax.y(), r);
+        list[3] = std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(pMin.x(), pMax.x(), pMin.z(), pMax.z(), pMin.y(), r));
+        list[4] = std::make_unique<YZRectangle>(pMin.y(), pMax.y(), pMin.z(), pMax.z(), pMax.x(), r);
+        list[5] = std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(pMin.y(), pMax.y(), pMin.z(), pMax.z(), pMin.x(), r));
         rects = HitableList(std::move(list), 6);
    }
 

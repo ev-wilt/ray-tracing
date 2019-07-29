@@ -32,6 +32,7 @@
 #include "hitables/Box.h"
 #include "hitables/modifiers/Translate.h"
 #include "hitables/modifiers/RotateY.h"
+#include "hitables/ConstantMedium.h"
 
 // Generates a random scene with 1 giant sphere, 3 large spheres, and several small spheres
 std::unique_ptr<Hitable> randomScene() {
@@ -159,5 +160,33 @@ std::unique_ptr<Hitable> cornellBox() {
     return std::make_unique<HitableList>(HitableList(std::move(list), 8));
 }
 
+std::unique_ptr<Hitable> cornellSmoke() {
+    auto redTex = std::make_unique<ConstantTexture>(Vector3(0.65, 0.05, 0.05));
+    auto redMat = std::make_shared<Lambertian>(std::move(redTex));
+
+    auto whiteTex = std::make_unique<ConstantTexture>(Vector3(0.73, 0.73, 0.73));
+    auto whiteMat = std::make_shared<Lambertian>(std::move(whiteTex));
+
+    auto greenTex = std::make_unique<ConstantTexture>(Vector3(0.12, 0.45, 0.15));
+    auto greenMat = std::make_shared<Lambertian>(std::move(greenTex));
+
+    auto lightTex = std::make_unique<ConstantTexture>(Vector3(7, 7, 7));
+    auto lightMat = std::make_shared<DiffuseLight>(std::move(lightTex));
+
+    auto box1 = std::make_unique<Translate>(std::make_unique<RotateY>(std::make_unique<Box>(Vector3(0, 0, 0), Vector3(165, 165, 165), whiteMat), -18), Vector3(130, 0, 65));
+    auto box2 = std::make_unique<Translate>(std::make_unique<RotateY>(std::make_unique<Box>(Vector3(0, 0, 0), Vector3(165, 330, 165), whiteMat), 15), Vector3(265, 0, 295));
+    std::vector<std::unique_ptr<Hitable>> list(8);
+
+    list[0] = std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(0, 555, 0, 555, 555, greenMat));
+    list[1] = std::make_unique<YZRectangle>(0, 555, 0, 555, 0, redMat);
+    list[2] = std::make_unique<XZRectangle>(113, 443, 127, 432, 554, lightMat);
+    list[3] = std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(0, 555, 0, 555, 555, whiteMat));
+    list[4] = std::make_unique<XZRectangle>(0, 555, 0, 555, 0, whiteMat);
+    list[5] = std::make_unique<FlippedNormals>(std::make_unique<XYRectangle>(0, 555, 0, 555, 555, whiteMat));
+    list[6] = std::make_unique<ConstantMedium>(std::move(box1), 0.01, std::make_unique<ConstantTexture>(Vector3(1.0, 1.0, 1.0)));
+    list[7] = std::make_unique<ConstantMedium>(std::move(box2), 0.01, std::make_unique<ConstantTexture>(Vector3(0.0, 0.0, 0.0)));
+
+    return std::make_unique<HitableList>(HitableList(std::move(list), 8));
+}
 
 #endif //RAYTRACING_SCENES_H
