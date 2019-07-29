@@ -35,7 +35,7 @@ Vector3 color(const Ray &ray, Hitable *world, int depth) {
 
 int main() {
     const int raysPerPixel = 200;
-    std::unique_ptr<Hitable> world = cornellBox();
+    std::unique_ptr<Hitable> world = cornellSmoke();
     Vector3 camPos = Vector3(278, 278, -800);
     Vector3 camDir = Vector3(278, 278, 0);
     float focusDist = 10;

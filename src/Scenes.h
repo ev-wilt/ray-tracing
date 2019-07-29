@@ -175,6 +175,7 @@ std::unique_ptr<Hitable> cornellSmoke() {
 
     auto box1 = std::make_unique<Translate>(std::make_unique<RotateY>(std::make_unique<Box>(Vector3(0, 0, 0), Vector3(165, 165, 165), whiteMat), -18), Vector3(130, 0, 65));
     auto box2 = std::make_unique<Translate>(std::make_unique<RotateY>(std::make_unique<Box>(Vector3(0, 0, 0), Vector3(165, 330, 165), whiteMat), 15), Vector3(265, 0, 295));
+
     std::vector<std::unique_ptr<Hitable>> list(8);
 
     list[0] = std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(0, 555, 0, 555, 555, greenMat));

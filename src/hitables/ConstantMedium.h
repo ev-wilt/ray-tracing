@@ -29,7 +29,7 @@ public:
 bool ConstantMedium::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const {
     HitRecord record1, record2;
 
-    if (boundary->hit(ray, std::numeric_limits<float>::min(), std::numeric_limits<float>::max(), record1)) {
+    if (boundary->hit(ray, std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max(), record1)) {
         if (boundary->hit(ray, record1.t + 0.0001, std::numeric_limits<float>::max(), record2)) {
             if (record1.t < tMin) record1.t = tMin;
             if (record2.t > tMax) record2.t = tMax;

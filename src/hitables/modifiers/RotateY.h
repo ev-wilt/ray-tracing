@@ -33,8 +33,10 @@ RotateY::RotateY(std::unique_ptr<Hitable> hit, float angle) : hitable(std::move(
     cosTheta = cos(radians);
     hasBox = hitable->boundingBox(0, 1, aabb);
 
-    Vector3 min(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-    Vector3 max(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+    float minF = std::numeric_limits<float>::lowest();
+    float maxF = std::numeric_limits<float>::max();
+    Vector3 min(maxF, maxF, maxF);
+    Vector3 max(minF, minF, minF);
 
     // Calculate the axis aligned bounding box
     for (int i = 0; i < 2; ++i) {

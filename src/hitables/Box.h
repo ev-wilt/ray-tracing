@@ -26,7 +26,7 @@ public:
         list[3] = std::make_unique<FlippedNormals>(std::make_unique<XZRectangle>(pMin.x(), pMax.x(), pMin.z(), pMax.z(), pMin.y(), r));
         list[4] = std::make_unique<YZRectangle>(pMin.y(), pMax.y(), pMin.z(), pMax.z(), pMax.x(), r);
         list[5] = std::make_unique<FlippedNormals>(std::make_unique<YZRectangle>(pMin.y(), pMax.y(), pMin.z(), pMax.z(), pMin.x(), r));
-        rects = HitableList(std::move(list), 6);
+        rects = std::make_unique<HitableList>(std::move(list), 6);
    }
 
     bool hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const override;
@@ -36,11 +36,11 @@ public:
     }
 
     Vector3 pMin, pMax;
-    HitableList rects;
+    std::unique_ptr<Hitable> rects;
 };
 
 bool Box::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) const {
-    return rects.hit(ray, tMin, tMax, record);
+    return rects->hit(ray, tMin, tMax, record);
 }
 
 #endif //RAYTRACING_BOX_H
