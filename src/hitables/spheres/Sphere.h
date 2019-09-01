@@ -37,7 +37,6 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) cons
     float b = dotProduct(diff, ray.getDirection());
     float c = dotProduct(diff, diff) - pow(radius, 2);
     float discriminant = pow(b, 2) - a * c;
-
     if (discriminant > 0) {
         float t = (-b - sqrt(pow(b, 2) - a * c)) / a;
         if (t < tMax && t > tMin) {

@@ -15,7 +15,7 @@ const int WIDTH = 500;
 const int HEIGHT = 500;
 
 // Returns the color that the given ray points to within the world
-Vector3 color(const Ray &ray, Hitable *world, int depth) {
+Vector3 color(const Ray &ray, std::unique_ptr<Hitable> &world, int depth) {
     HitRecord record;
     if (world->hit(ray, 0.001, std::numeric_limits<float>::max(), record)) {
         Ray scattered;
@@ -34,9 +34,9 @@ Vector3 color(const Ray &ray, Hitable *world, int depth) {
 }
 
 int main() {
-    const int raysPerPixel = 200;
+    const int raysPerPixel = 100;
     std::unique_ptr<Hitable> world = cornellSmoke();
-    Vector3 camPos = Vector3(278, 278, -800);
+    Vector3 camPos = Vector3(278, 200, -1200);
     Vector3 camDir = Vector3(278, 278, 0);
     float focusDist = 10;
     Camera cam(camPos, camDir, Vector3(0, 1, 0), 40, float(WIDTH) / float(HEIGHT), 0.0, focusDist, 0.0, 1.0);
@@ -62,7 +62,7 @@ int main() {
                             float u = float(x + randomReal()) / float(WIDTH);
                             float v = float(y + randomReal()) / float(HEIGHT);
                             Ray ray = cam.getRay(u, v);
-                            col += color(ray, world.get(), 0);
+                            col += color(ray, world, 0);
                         }
 
                         col /= float(raysPerPixel);

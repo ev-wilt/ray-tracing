@@ -12,44 +12,37 @@
 #include "Hitable.h"
 #include "../Random.h"
 
-struct {
-    bool operator() (std::shared_ptr<Hitable> a, std::shared_ptr<Hitable> b) {
-        AxisAlignedBoundingBox leftBox, rightBox;
-        if (!a->boundingBox(0, 0, leftBox)|| !b->boundingBox(0, 0, rightBox)) {
-            std::cerr << "Bounding box missing from BVH node's constructor\n";
-        }
-        if (leftBox.getMin().x() - rightBox.getMin().x() < 0.0) {
-            return -1;
-        }
-        return 1;
+bool boxXCompare(const std::shared_ptr<Hitable> &a, const std::shared_ptr<Hitable> &b) {
+    AxisAlignedBoundingBox leftBox, rightBox;
+    if (!a->boundingBox(0, 0, leftBox)|| !b->boundingBox(0, 0, rightBox)) {
+        std::cerr << "Bounding box missing from BVH node's constructor\n";
     }
-} boxXCompare;
+    if (leftBox.getMin().x() - rightBox.getMin().x() < 0.0) {
+        return true;
+    }
+    return false;
+}
 
-struct {
-    bool operator() (std::shared_ptr<Hitable> a, std::shared_ptr<Hitable> b) {
-        AxisAlignedBoundingBox leftBox, rightBox;
-        if (!a->boundingBox(0, 0, leftBox)|| !b->boundingBox(0, 0, rightBox)) {
-            std::cerr << "Bounding box missing from BVH node's constructor\n";
-        }
-        if (leftBox.getMin().y() - rightBox.getMin().y() < 0.0) {
-            return -1;
-        }
-        return 1;
+bool boxYCompare(const std::shared_ptr<Hitable> &a, const std::shared_ptr<Hitable> &b) {
+    AxisAlignedBoundingBox leftBox, rightBox;
+    if (!a->boundingBox(0, 0, leftBox)|| !b->boundingBox(0, 0, rightBox)) {
+        std::cerr << "Bounding box missing from BVH node's constructor\n";
     }
-} boxYCompare;
-
-struct {
-    bool operator() (std::shared_ptr<Hitable> a, std::shared_ptr<Hitable> b) {
-        AxisAlignedBoundingBox leftBox, rightBox;
-        if (!a->boundingBox(0, 0, leftBox)|| !b->boundingBox(0, 0, rightBox)) {
-            std::cerr << "Bounding box missing from BVH node's constructor\n";
-        }
-        if (leftBox.getMin().z() - rightBox.getMin().z() < 0.0) {
-            return -1;
-        }
-        return 1;
+    if (leftBox.getMin().y() - rightBox.getMin().y() < 0.0) {
+        return true;
     }
-} boxZCompare;
+    return false;
+}
+bool boxZCompare (const std::shared_ptr<Hitable> &a, const std::shared_ptr<Hitable> &b) {
+    AxisAlignedBoundingBox leftBox, rightBox;
+    if (!a->boundingBox(0, 0, leftBox)|| !b->boundingBox(0, 0, rightBox)) {
+        std::cerr << "Bounding box missing from BVH node's constructor\n";
+    }
+    if (leftBox.getMin().z() - rightBox.getMin().z() < 0.0) {
+        return true;
+    }
+    return false;
+}
 
 class BvhNode : public Hitable {
 public:
@@ -66,7 +59,6 @@ public:
 
 BvhNode::BvhNode(std::vector<std::shared_ptr<Hitable>> list, int size, float timeStart, float timeEnd) {
     int axis = int(randomReal() * 3);
-
     if (axis == 0) {
         std::partial_sort(list.begin(), list.begin() + size, list.end(), boxXCompare);
     }
@@ -85,8 +77,8 @@ BvhNode::BvhNode(std::vector<std::shared_ptr<Hitable>> list, int size, float tim
     }
     else {
         auto rightSub = std::vector<std::shared_ptr<Hitable>>(list.begin() + size / 2, list.end());
-        left = std::make_unique<BvhNode>(list, size / 2, timeStart, timeEnd);
-        right = std::make_unique<BvhNode>(rightSub, size - size / 2, timeStart, timeEnd);
+        left = std::make_shared<BvhNode>(list, size / 2, timeStart, timeEnd);
+        right = std::make_shared<BvhNode>(rightSub, size - size / 2, timeStart, timeEnd);
     }
     AxisAlignedBoundingBox leftBox, rightBox;
     if (!left->boundingBox(timeStart, timeEnd, leftBox) || !right->boundingBox(timeStart, timeEnd, rightBox)) {
@@ -123,7 +115,6 @@ bool BvhNode::hit(const Ray &ray, float tMin, float tMax, HitRecord &record) con
             record = recRight;
             return true;
         }
-        return false;
     }
     return false;
 }
